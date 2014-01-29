@@ -2,11 +2,9 @@
 \alias{newMCResultAnalytical}
 \title{MCResultAnalytical object constructor with matrix in wide format as input.}
 \usage{
-  newMCResultAnalytical(wdata, para, xmean,
-    sample.names = NULL, method.names = NULL,
-    regmeth = "Unknown", cimeth = "analytical",
-    error.ratio = error.ratio, alpha = 0.05,
-    weight = rep(1, nrow(wdata)))
+newMCResultAnalytical(wdata, para, xmean, sample.names = NULL,
+  method.names = NULL, regmeth = "Unknown", cimeth = "analytical",
+  error.ratio = error.ratio, alpha = 0.05, weight = rep(1, nrow(wdata)))
 }
 \arguments{
   \item{wdata}{Measurement data in matrix format. First
@@ -40,10 +38,10 @@
   for each point}
 }
 \value{
-  MCResultAnalytical object containing regression results.
+MCResultAnalytical object containing regression results.
 }
 \description{
-  MCResultAnalytical object constructor with matrix in wide
-  format as input.
+MCResultAnalytical object constructor with matrix in wide
+format as input.
 }
 

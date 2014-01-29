@@ -2,11 +2,10 @@
 \alias{mc.bootstrap}
 \title{Resampling estimation of regression parameters and standard  errors.}
 \usage{
-  mc.bootstrap(method.reg = c("LinReg", "WLinReg", "Deming", "WDeming", "PaBa", "PaBaLarge"),
-    X, Y, error.ratio, nsamples = 1000, jackknife = TRUE,
-    bootstrap = c("none", "bootstrap", "nestedbootstrap"),
-    nnested = 25, iter.max = 30, threshold = 1e-08,
-    NBins = 1e+06)
+mc.bootstrap(method.reg = c("LinReg", "WLinReg", "Deming", "WDeming", "PaBa",
+  "PaBaLarge"), X, Y, error.ratio, nsamples = 1000, jackknife = TRUE,
+  bootstrap = c("none", "bootstrap", "nestedbootstrap"), nnested = 25,
+  iter.max = 30, threshold = 1e-08, NBins = 1e+06)
 }
 \arguments{
   \item{X}{Measurement values of reference method}
@@ -45,56 +44,55 @@
   'NBins' bins covering the range of all slopes}
 }
 \value{
-  a list consisting of \item{glob.coef}{Numeric vector of
-  length two with global point estimations of intercept and
-  slope.} \item{glob.sigma}{Numeric vector of length two
-  with global estimations of standard errors of intercept
-  and slope.} \item{xmean}{Global (weighted-)average of
-  reference method values.} \item{B0jack}{Numeric vector
-  with point estimations of intercept for jackknife
-  samples.  The i-th element contains point estimation for
-  data set without i-th observation} \item{B1jack}{Numeric
-  vector with point estimations of slope for jackknife
-  samples.  The i-th element contains point estimation for
-  data set without i-th observation} \item{B0}{Numeric
-  vector with point estimations of intercept for each
-  bootstrap sample.  The i-th element contains point
-  estimation for i-th bootstrap sample.} \item{B1}{Numeric
-  vector with point estimations of slope for each bootstrap
-  sample.  The i-th element contains point estimation for
-  i-th bootstrap sample.} \item{MX}{Numeric vector with
-  point estimations of (weighted-)average of reference
-  method values for each bootstrap sample.  The i-th
-  element contains point estimation for i-th bootstrap
-  sample.} \item{sigmaB0}{Numeric vector with estimation of
-  standard error of intercept for each bootstrap sample.
-  The i-th element contains point estimation for i-th
-  bootstrap sample.} \item{sigmaB1}{Numeric vector with
-  estimation of standard error of slope for each bootstrap
-  sample.  The i-th element contains point estimation for
-  i-th bootstrap sample.} \item{nsamples}{Number of
-  bootstrap samples.} \item{nnested}{Number of nested
-  bootstrap samples.} \item{cimeth}{Method of confidence
-  interval calculation (bootstrap).} \item{npoints}{Number
-  of observations.}
+a list consisting of \item{glob.coef}{Numeric vector of
+length two with global point estimations of intercept and
+slope.} \item{glob.sigma}{Numeric vector of length two with
+global estimations of standard errors of intercept and
+slope.} \item{xmean}{Global (weighted-)average of reference
+method values.} \item{B0jack}{Numeric vector with point
+estimations of intercept for jackknife samples.  The i-th
+element contains point estimation for data set without i-th
+observation} \item{B1jack}{Numeric vector with point
+estimations of slope for jackknife samples.  The i-th
+element contains point estimation for data set without i-th
+observation} \item{B0}{Numeric vector with point
+estimations of intercept for each bootstrap sample.  The
+i-th element contains point estimation for i-th bootstrap
+sample.} \item{B1}{Numeric vector with point estimations of
+slope for each bootstrap sample.  The i-th element contains
+point estimation for i-th bootstrap sample.}
+\item{MX}{Numeric vector with point estimations of
+(weighted-)average of reference method values for each
+bootstrap sample.  The i-th element contains point
+estimation for i-th bootstrap sample.}
+\item{sigmaB0}{Numeric vector with estimation of standard
+error of intercept for each bootstrap sample.  The i-th
+element contains point estimation for i-th bootstrap
+sample.} \item{sigmaB1}{Numeric vector with estimation of
+standard error of slope for each bootstrap sample.  The
+i-th element contains point estimation for i-th bootstrap
+sample.} \item{nsamples}{Number of bootstrap samples.}
+\item{nnested}{Number of nested bootstrap samples.}
+\item{cimeth}{Method of confidence interval calculation
+(bootstrap).} \item{npoints}{Number of observations.}
 }
 \description{
-  Generate jackknife or (nested-) bootstrap replicates of a
-  statistic applied to data. Only a nonparametric ballanced
-  design is possible. For each sample calculate point
-  estimations and standard errors for regression
-  coefficients.
+Generate jackknife or (nested-) bootstrap replicates of a
+statistic applied to data. Only a nonparametric ballanced
+design is possible. For each sample calculate point
+estimations and standard errors for regression
+coefficients.
 }
 \author{
-  Ekaterina Manuilova
-  \email{ekaterina.manuilova@contractors.roche.com}, Fabian
-  Model \email{fabian.model@roche.com}
+Ekaterina Manuilova
+\email{ekaterina.manuilova@contractors.roche.com}, Fabian
+Model \email{fabian.model@roche.com}
 }
 \references{
-  Efron, B., Tibshirani, R.J. (1993) \emph{An Introduction
-  to the Bootstrap}. Chapman and Hall.  Carpenter, J.,
-  Bithell, J. (2000) Bootstrap confidence intervals: when,
-  which, what? A practical guide for medical statisticians.
-  \emph{Stat Med}, \bold{19 (9)}, 1141--1164.
+Efron, B., Tibshirani, R.J. (1993) \emph{An Introduction to
+the Bootstrap}. Chapman and Hall.  Carpenter, J., Bithell,
+J. (2000) Bootstrap confidence intervals: when, which,
+what? A practical guide for medical statisticians.
+\emph{Stat Med}, \bold{19 (9)}, 1141--1164.
 }
 

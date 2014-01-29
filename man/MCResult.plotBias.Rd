@@ -3,17 +3,14 @@
 \alias{plotBias}
 \title{Plot Estimated Systematical Bias with Confidence Bounds}
 \usage{
-  MCResult.plotBias(x, xn = 100, alpha = 0.05, add = FALSE,
-    prop = FALSE, xlim = NULL, ylim = NULL, bias = TRUE,
-    bias.lty = 1, bias.lwd = 2, bias.col = NULL,
-    ci.area = TRUE, ci.area.col = NULL, ci.border = FALSE,
-    ci.border.col = NULL, ci.border.lwd = 1,
-    ci.border.lty = 2, zeroline = TRUE,
-    zeroline.col = NULL, zeroline.lty = 2,
-    zeroline.lwd = 1, main = NULL, sub = NULL,
-    add.grid = TRUE, xlab = NULL, ylab = NULL,
-    cut.point = NULL, cut.point.col = "red",
-    cut.point.lwd = 2, cut.point.lty = 1, ...)
+MCResult.plotBias(x, xn = 100, alpha = 0.05, add = FALSE, prop = FALSE,
+  xlim = NULL, ylim = NULL, bias = TRUE, bias.lty = 1, bias.lwd = 2,
+  bias.col = NULL, ci.area = TRUE, ci.area.col = NULL,
+  ci.border = FALSE, ci.border.col = NULL, ci.border.lwd = 1,
+  ci.border.lty = 2, zeroline = TRUE, zeroline.col = NULL,
+  zeroline.lty = 2, zeroline.lwd = 1, main = NULL, sub = NULL,
+  add.grid = TRUE, xlab = NULL, ylab = NULL, cut.point = NULL,
+  cut.point.col = "red", cut.point.lwd = 2, cut.point.lty = 1, ...)
 }
 \arguments{
   \item{x}{object of class "MCResult".}
@@ -101,10 +98,10 @@
   \item{...}{further graphical parameters}
 }
 \description{
-  This function plots the estimated systematical bias
-  \eqn{( Intercept + Slope * Refrencemethod ) -
-  Referencemethod} with confidence bounds, covering the
-  whole range of reference method X or only part of it.
+This function plots the estimated systematical bias \eqn{(
+Intercept + Slope * Refrencemethod ) - Referencemethod}
+with confidence bounds, covering the whole range of
+reference method X or only part of it.
 }
 \examples{
 #library("mcr")
@@ -140,8 +137,8 @@ plotBias(m1, ci.area=FALSE, ci.border=TRUE, prop=TRUE, cut.point=0.6,
              xlim=c(0.4,0.8),cut.point.col="orange", cut.point.lwd=3, main ="")
 }
 \seealso{
-  \code{\link{calcBias}}, \code{\link{plot.mcr}},
-  \code{\link{plotResiduals}},
-  \code{\link{plotDifference}}, \code{\link{compareFit}}
+\code{\link{calcBias}}, \code{\link{plot.mcr}},
+\code{\link{plotResiduals}}, \code{\link{plotDifference}},
+\code{\link{compareFit}}
 }
 

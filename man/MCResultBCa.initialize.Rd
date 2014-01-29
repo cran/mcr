@@ -2,16 +2,14 @@
 \alias{MCResultBCa.initialize}
 \title{Initialize Method for 'MCResultBCa' Objects.}
 \usage{
-  MCResultBCa.initialize(.Object,
-    data = data.frame(X = NA, Y = NA),
-    para = matrix(NA, ncol = 4, nrow = 2), xmean = 0,
-    mnames = c("unknown", "unknown"), regmeth = "unknown",
-    cimeth = "unknown", bootcimeth = "unknown",
-    alpha = 0.05, glob.coef = c(0, 0),
-    glob.sigma = c(0, 0), nsamples = 0, nnested = 0,
-    B0jack = 0, B1jack = 0, B0 = 0, B1 = 0, MX = 0,
-    rng.seed = as.numeric(NA), rng.kind = "unknown",
-    sigmaB0 = 0, sigmaB1 = 0, error.ratio = 0, weight = 1)
+MCResultBCa.initialize(.Object, data = data.frame(X = NA, Y = NA),
+  para = matrix(NA, ncol = 4, nrow = 2), xmean = 0, mnames = c("unknown",
+  "unknown"), regmeth = "unknown", cimeth = "unknown",
+  bootcimeth = "unknown", alpha = 0.05, glob.coef = c(0, 0),
+  glob.sigma = c(0, 0), nsamples = 0, nnested = 0, B0jack = 0,
+  B1jack = 0, B0 = 0, B1 = 0, MX = 0, rng.seed = as.numeric(NA),
+  rng.kind = "unknown", sigmaB0 = 0, sigmaB1 = 0, error.ratio = 0,
+  weight = 1)
 }
 \arguments{
   \item{.Object}{object to be initialized}
@@ -68,7 +66,7 @@
   \item{weight}{1 for each data point}
 }
 \description{
-  Method initializes newly created objects of class
-  'MCResultBCa'.
+Method initializes newly created objects of class
+'MCResultBCa'.
 }
 

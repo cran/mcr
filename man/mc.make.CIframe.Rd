@@ -2,7 +2,7 @@
 \alias{mc.make.CIframe}
 \title{Returns Results of Calculations in Matrix Form}
 \usage{
-  mc.make.CIframe(b0, b1, se.b0, se.b1, CI.b0, CI.b1)
+mc.make.CIframe(b0, b1, se.b0, se.b1, CI.b0, CI.b1)
 }
 \arguments{
   \item{b0}{point estimate for intercept.}
@@ -20,10 +20,10 @@
   interval for slope.}
 }
 \value{
-  2x4 matrix of estimates and confidence intervals for
-  intercept and slope.
+2x4 matrix of estimates and confidence intervals for
+intercept and slope.
 }
 \description{
-  Returns Results of Calculations in Matrix Form
+Returns Results of Calculations in Matrix Form
 }
 

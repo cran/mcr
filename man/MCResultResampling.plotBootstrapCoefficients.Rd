@@ -2,8 +2,7 @@
 \alias{MCResultResampling.plotBootstrapCoefficients}
 \title{Plot distriblution of bootstrap coefficients}
 \usage{
-  MCResultResampling.plotBootstrapCoefficients(.Object,
-    breaks = 20, ...)
+MCResultResampling.plotBootstrapCoefficients(.Object, breaks = 20, ...)
 }
 \arguments{
   \item{.Object}{Object of class "MCResultResampling"}
@@ -13,7 +12,7 @@
   \item{...}{further graphical parameters}
 }
 \description{
-  Plot distriblution of bootstrap coefficients (slope and
-  intercept).
+Plot distriblution of bootstrap coefficients (slope and
+intercept).
 }
 

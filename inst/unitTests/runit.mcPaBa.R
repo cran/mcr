@@ -192,5 +192,22 @@ test.mc.paba.call <- function()
         
     checkEquals( paba.td75, calanas.td75, tolerance=10e-14 )  
     
+    
+    # Check problematic uncorrelated data set for borderline case where shift index K is half the sample size
+    # this would result in index error with original PaBa equations. Should be properly handled by our PaBa implementation.
+
+    td.idxprob <- matrix(ncol=2,byrow=T,data=c(1.25,1.81,1.11,1.15,1.67,0.78,1.22,1.53,1.33,1.22,0.99,1.06,1.40,1.30,1.34,0.82,0.53,2.30,1.52,2.11))
+    posCor <- ifelse(cor(td.idxprob[,1],td.idxprob[,2],method="kendall") >= 0, TRUE, FALSE)
+    angM <- mcr:::mc.calcAngleMat(td.idxprob[,1],td.idxprob[,2], posCor)
+
+    set.seed(42)
+    f <- function(x,y) {
+        ind <- sample(1:length(x), length(x), replace=TRUE)
+        posCor <- ifelse(cor(x[ind],y[ind],method="kendall") >= 0, TRUE, FALSE)
+        mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=FALSE) # test without CI
+        mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=TRUE) # test with CI
+    }
+
+    for(i in 1:2000) {f(td.idxprob[,1],td.idxprob[,2])} # call mc.paba with different data configurations, first occurence of K=N/2 configuration in iteration 734
 }
 

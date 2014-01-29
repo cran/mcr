@@ -2,12 +2,10 @@
 \alias{MCResultAnalytical.initialize}
 \title{Initialize Method for 'MCResultAnalytical' Objects.}
 \usage{
-  MCResultAnalytical.initialize(.Object,
-    data = data.frame(X = NA, Y = NA), xmean = 0,
-    para = matrix(NA, ncol = 4, nrow = 2),
-    mnames = c("unknown", "unknown"), regmeth = "unknown",
-    cimeth = "analytical", error.ratio = 0, alpha = 0.05,
-    weight = 1)
+MCResultAnalytical.initialize(.Object, data = data.frame(X = NA, Y = NA),
+  xmean = 0, para = matrix(NA, ncol = 4, nrow = 2), mnames = c("unknown",
+  "unknown"), regmeth = "unknown", cimeth = "analytical", error.ratio = 0,
+  alpha = 0.05, weight = 1)
 }
 \arguments{
   \item{.Object}{object to be initialized}
@@ -33,6 +31,6 @@
   \item{weight}{1 for each data point}
 }
 \description{
-  Initialize Method for 'MCResultAnalytical' Objects.
+Initialize Method for 'MCResultAnalytical' Objects.
 }
 

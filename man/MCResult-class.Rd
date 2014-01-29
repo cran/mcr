@@ -10,6 +10,7 @@
 \alias{getErrorRatio,MCResult-method}
 \alias{getRegmethod,MCResult-method}
 \alias{getResiduals,MCResult-method}
+\alias{getFitted,MCResult-method}
 \alias{getWeights,MCResult-method}
 \alias{plot,MCResult-method}
 \alias{plotBias,MCResult-method}
@@ -56,7 +57,7 @@ Object can be directly constructed by calling \code{\link{newMCResult}} or \code
 	 }
 }
 \author{
-Ekaterina Manuilova \email{ekaterina.manuilova@contractors.roche.com}, 
+Ekaterina Manuilova \email{ekaterina.manuilova@roche.com}, 
 Andre Schuetzenmeister \email{andre.schuetzenmeister@roche.com}, 
 Fabian Model \email{fabian.model@roche.com}
 }

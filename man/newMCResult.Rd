@@ -2,10 +2,9 @@
 \alias{newMCResult}
 \title{MCResult Object Constructor with Matrix in Wide Format as Input}
 \usage{
-  newMCResult(wdata, para, sample.names = NULL,
-    method.names = NULL, regmeth = "Unknown", cimeth,
-    error.ratio, alpha = 0.05,
-    weight = rep(1, nrow(wdata)))
+newMCResult(wdata, para, sample.names = NULL, method.names = NULL,
+  regmeth = "Unknown", cimeth, error.ratio, alpha = 0.05, weight = rep(1,
+  nrow(wdata)))
 }
 \arguments{
   \item{wdata}{measurement data in matrix format. First
@@ -37,10 +36,10 @@
   for each point}
 }
 \value{
-  MCResult object containing regression results.
+MCResult object containing regression results.
 }
 \description{
-  MCResult Object Constructor with Matrix in Wide Format as
-  Input
+MCResult Object Constructor with Matrix in Wide Format as
+Input
 }
 

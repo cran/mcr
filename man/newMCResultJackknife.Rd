@@ -2,11 +2,9 @@
 \alias{newMCResultJackknife}
 \title{MCResultJackknife Object Constructor with Matrix in Wide Format as Input}
 \usage{
-  newMCResultJackknife(wdata, para, sample.names = NULL,
-    method.names = NULL, regmeth = "Unknown", glob.coef,
-    cimeth = "unknown", B0jack, B1jack,
-    error.ratio = error.ratio, alpha = 0.05,
-    weight = rep(1, nrow(wdata)))
+newMCResultJackknife(wdata, para, sample.names = NULL, method.names = NULL,
+  regmeth = "Unknown", glob.coef, cimeth = "unknown", B0jack, B1jack,
+  error.ratio = error.ratio, alpha = 0.05, weight = rep(1, nrow(wdata)))
 }
 \arguments{
   \item{wdata}{measurement data in matrix format. First
@@ -44,10 +42,10 @@
   for each point}
 }
 \value{
-  MCResult object containing regression results.
+MCResult object containing regression results.
 }
 \description{
-  MCResultJackknife Object Constructor with Matrix in Wide
-  Format as Input
+MCResultJackknife Object Constructor with Matrix in Wide
+Format as Input
 }
 

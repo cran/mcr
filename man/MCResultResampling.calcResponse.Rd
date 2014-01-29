@@ -2,8 +2,8 @@
 \alias{MCResultResampling.calcResponse}
 \title{Caluculate Response}
 \usage{
-  MCResultResampling.calcResponse(.Object, x.levels,
-    alpha = 0.05, bootcimeth = .Object@bootcimeth)
+MCResultResampling.calcResponse(.Object, x.levels, alpha = 0.05,
+  bootcimeth = .Object@bootcimeth)
 }
 \arguments{
   \item{.Object}{object of class 'MCResultResampling'}
@@ -17,7 +17,7 @@
   be used}
 }
 \description{
-  Calculate predicted values for given values of the
-  reference-method.
+Calculate predicted values for given values of the
+reference-method.
 }
 

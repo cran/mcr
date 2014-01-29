@@ -2,8 +2,8 @@
 \alias{MCResultBCa.calcResponse}
 \title{Caluculate Response}
 \usage{
-  MCResultBCa.calcResponse(.Object, x.levels, alpha = 0.05,
-    bootcimeth = .Object@bootcimeth)
+MCResultBCa.calcResponse(.Object, x.levels, alpha = 0.05,
+  bootcimeth = .Object@bootcimeth)
 }
 \arguments{
   \item{.Object}{object of class 'MCResultBCa'}
@@ -17,7 +17,7 @@
   to be used for bootstrap confidence intervals}
 }
 \description{
-  Calculate predicted values for given values of the
-  reference-method.
+Calculate predicted values for given values of the
+reference-method.
 }
 

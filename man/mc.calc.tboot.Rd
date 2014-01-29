@@ -2,7 +2,7 @@
 \alias{mc.calc.tboot}
 \title{Bootstrap-t Method for Calculation of Resampling Confidence Intervals}
 \usage{
-  mc.calc.tboot(Xboot, Sboot, xhat, shat, alpha)
+mc.calc.tboot(Xboot, Sboot, xhat, shat, alpha)
 }
 \arguments{
   \item{Xboot}{vector of point estimates for bootstrap
@@ -25,21 +25,20 @@
   0.05).}
 }
 \value{
-  a list with elements \item{est}{point estimate for the
-  complete data set (xhat).} \item{se}{estimate of standard
-  deviation for the complete data set (shat).}
-  \item{CI}{confidence interval for the point estimate.}
+a list with elements \item{est}{point estimate for the
+complete data set (xhat).} \item{se}{estimate of standard
+deviation for the complete data set (shat).}
+\item{CI}{confidence interval for the point estimate.}
 }
 \description{
-  Calculate resampling confidence intervals for intercept,
-  slope or bias with t-Boot method given a vector of
-  bootstrap point estimates and a vector of bootstrap
-  standard deviations.
+Calculate resampling confidence intervals for intercept,
+slope or bias with t-Boot method given a vector of
+bootstrap point estimates and a vector of bootstrap
+standard deviations.
 }
 \references{
-  Carpenter, J., Bithell, J. (2000) Bootstrap confidence
-  intervals: when, which, what? A practical guide for
-  medical statisticians.  \emph{Stat Med}, \bold{19 (9)},
-  1141--1164.
+Carpenter, J., Bithell, J. (2000) Bootstrap confidence
+intervals: when, which, what? A practical guide for medical
+statisticians.  \emph{Stat Med}, \bold{19 (9)}, 1141--1164.
 }
 

@@ -2,12 +2,10 @@
 \alias{MCResult.initialize}
 \title{MCResult Object Initialization}
 \usage{
-  MCResult.initialize(.Object,
-    data = data.frame(X = NA, Y = NA),
-    para = matrix(NA, ncol = 4, nrow = 2),
-    mnames = c("unknown", "unknown"), regmeth = "unknown",
-    cimeth = "unknown", error.ratio = 0, alpha = 0.05,
-    weight = 1)
+MCResult.initialize(.Object, data = data.frame(X = NA, Y = NA),
+  para = matrix(NA, ncol = 4, nrow = 2), mnames = c("unknown", "unknown"),
+  regmeth = "unknown", cimeth = "unknown", error.ratio = 0,
+  alpha = 0.05, weight = 1)
 }
 \arguments{
   \item{.Object}{object of class "MCResult"}
@@ -37,9 +35,9 @@
   \item{weight}{weights to be used for observations}
 }
 \value{
-  MCResult object with initialized parameter.
+MCResult object with initialized parameter.
 }
 \description{
-  MCResult Object Initialization
+MCResult Object Initialization
 }
 

@@ -2,13 +2,11 @@
 \alias{MCResultJackknife.initialize}
 \title{Initialize Method for 'MCResultJackknife' Objects.}
 \usage{
-  MCResultJackknife.initialize(.Object,
-    data = data.frame(X = NA, Y = NA),
-    para = matrix(NA, ncol = 4, nrow = 2),
-    mnames = c("unknown", "unknown"), regmeth = "unknown",
-    cimeth = "jackknife", alpha = 0.05,
-    glob.coef = c(0, 0), B0jack = 0, B1jack = 0,
-    error.ratio = 0, weight = 1)
+MCResultJackknife.initialize(.Object, data = data.frame(X = NA, Y = NA),
+  para = matrix(NA, ncol = 4, nrow = 2), mnames = c("unknown", "unknown"),
+  regmeth = "unknown", cimeth = "jackknife", alpha = 0.05,
+  glob.coef = c(0, 0), B0jack = 0, B1jack = 0, error.ratio = 0,
+  weight = 1)
 }
 \arguments{
   \item{.Object}{object to be initialized}
@@ -38,7 +36,7 @@
   \item{weight}{1 for each data point}
 }
 \description{
-  Method initializes newly created objects of class
-  'MCResultAnalytical'.
+Method initializes newly created objects of class
+'MCResultAnalytical'.
 }
 

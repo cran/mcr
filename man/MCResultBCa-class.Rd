@@ -51,7 +51,7 @@ Class \code{"\linkS4class{MCResult}"}, by class "MCResultJackknife", distance 2.
 	 }
 }
 \author{
-Ekaterina Manuilova \email{ekaterina.manuilova@contractors.roche.com}, 
+Ekaterina Manuilova \email{ekaterina.manuilova@roche.com}, 
 Andre Schuetzenmeister \email{andre.schuetzenmeister@roche.com}, 
 Fabian Model \email{fabian.model@roche.com}
 }

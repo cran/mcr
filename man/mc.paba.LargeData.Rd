@@ -2,8 +2,8 @@
 \alias{mc.paba.LargeData}
 \title{Passing-Bablok Regression for Large Datasets}
 \usage{
-  mc.paba.LargeData(X, Y, NBins = 1e+06, alpha = 0.05,
-    posCor = TRUE, calcCI = TRUE)
+mc.paba.LargeData(X, Y, NBins = 1e+06, alpha = 0.05, posCor = TRUE,
+  calcCI = TRUE)
 }
 \arguments{
   \item{X}{(numeric) vector containing measurement values
@@ -25,18 +25,17 @@
   computed?}
 }
 \value{
-  Matrix of estimates and confidence intervals for
-  intercept and slope. No standard errors provided by this
-  algorithm.
+Matrix of estimates and confidence intervals for intercept
+and slope. No standard errors provided by this algorithm.
 }
 \description{
-  This function represents an interface to a fast
-  C-implementation of an adaption of the Passing-Bablok
-  algorithm for large datasets. Instead of building the
-  complete matrix of pair-wise slope values, a pre-defined
-  binning of slope-values is used (Default NBins=1e06).
-  This reduces the required memory dramatically and speeds
-  up the computation.
+This function represents an interface to a fast
+C-implementation of an adaption of the Passing-Bablok
+algorithm for large datasets. Instead of building the
+complete matrix of pair-wise slope values, a pre-defined
+binning of slope-values is used (Default NBins=1e06). This
+reduces the required memory dramatically and speeds up the
+computation.
 }
 \examples{
 library("mcr")
@@ -55,8 +54,8 @@ getCoefficients(res2)
 getCoefficients(res1)-getCoefficients(res2)
 }
 \author{
-  Andre Schuetzenmeister
-  \email{andre.schuetzenmeister@roche.com} (partly re-using
-  code of function 'mc.paba')
+Andre Schuetzenmeister
+\email{andre.schuetzenmeister@roche.com} (partly re-using
+code of function 'mc.paba')
 }
 

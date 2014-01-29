@@ -2,7 +2,7 @@
 \alias{mc.analytical.ci}
 \title{Analytical Confidence Interval}
 \usage{
-  mc.analytical.ci(b0, b1, se.b0, se.b1, n, alpha)
+mc.analytical.ci(b0, b1, se.b0, se.b1, n, alpha)
 }
 \arguments{
   \item{b0}{point estimate of intercept.}
@@ -20,11 +20,11 @@
   0.05).}
 }
 \value{
-  2x4 matrix of estimates and confidence intervals for
-  intercept and slope.
+2x4 matrix of estimates and confidence intervals for
+intercept and slope.
 }
 \description{
-  Calculate wald confidence intervals for intercept and
-  slope given point estimates and standard errors.
+Calculate wald confidence intervals for intercept and slope
+given point estimates and standard errors.
 }
 

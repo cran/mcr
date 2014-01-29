@@ -2,13 +2,11 @@
 \alias{includeLegend}
 \title{Include Legend}
 \usage{
-  includeLegend(models = list(), digits = 2,
-    design = paste(1:2),
-    place = c("topleft", "topright", "bottomleft", "bottomright"),
-    colors, lty = rep(1, length(models)),
-    lwd = rep(2, length(models)), box.lty = "blank",
-    cex = 0.8, bg = "white", inset = c(0.01, 0.01),
-    bias = FALSE, model.names = NULL, ...)
+includeLegend(models = list(), digits = 2, design = paste(1:2),
+  place = c("topleft", "topright", "bottomleft", "bottomright"), colors,
+  lty = rep(1, length(models)), lwd = rep(2, length(models)),
+  box.lty = "blank", cex = 0.8, bg = "white", inset = c(0.01, 0.01),
+  bias = FALSE, model.names = NULL, ...)
 }
 \arguments{
   \item{models}{list of length n with Objects of class
@@ -51,12 +49,12 @@
   \item{...}{other parameters of function legend().}
 }
 \value{
-  Legend in plot.
+Legend in plot.
 }
 \description{
-  Include legend in regression plot (function
-  \code{plot()}) or in bias plot (function \code{plotBias
-  ()}) with two or more lines.
+Include legend in regression plot (function \code{plot()})
+or in bias plot (function \code{plotBias ()}) with two or
+more lines.
 }
 \examples{
 #library("mcr")
@@ -83,8 +81,8 @@
                           colors=c("darkblue","red"), design="1", digits=2)
 }
 \seealso{
-  \code{\link{plot.mcr}}, \code{\link{plotBias}},
-  \code{\link{plotResiduals}},
-  \code{\link{plotDifference}}, \code{\link{compareFit}}
+\code{\link{plot.mcr}}, \code{\link{plotBias}},
+\code{\link{plotResiduals}}, \code{\link{plotDifference}},
+\code{\link{compareFit}}
 }
 

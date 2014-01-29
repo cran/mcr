@@ -3,12 +3,10 @@
 \alias{plotResiduals}
 \title{Plot Residuals of an MCResult Object}
 \usage{
-  MCResult.plotResiduals(.Object,
-    res.type = c("optimized", "y", "x"),
-    xaxis = c("yhat", "both", "xhat"), ref.line = TRUE,
-    ref.line.col = "red", ref.line.lty = 2,
-    ref.line.lwd = 1, main = NULL, xlab = NULL,
-    ylab = NULL, add.grid = TRUE, ...)
+MCResult.plotResiduals(.Object, res.type = c("optimized", "y", "x"),
+  xaxis = c("yhat", "both", "xhat"), ref.line = TRUE,
+  ref.line.col = "red", ref.line.lty = 2, ref.line.lwd = 1, main = NULL,
+  xlab = NULL, ylab = NULL, add.grid = TRUE, ...)
 }
 \arguments{
   \item{.Object}{object of type "MCResult".}
@@ -48,7 +46,7 @@
   \item{...}{further graphical parameters}
 }
 \description{
-  Plot Residuals of an MCResult Object
+Plot Residuals of an MCResult Object
 }
 \examples{
 data(creatinine,package="mcr")
@@ -64,8 +62,8 @@ data(creatinine,package="mcr")
     plotResiduals(model, res.type="y", xaxis="yhat")
 }
 \seealso{
-  \code{\link{getResiduals}}, \code{\link{plot.mcr}},
-  \code{\link{plotDifference}}, \code{\link{plotBias}},
-  \code{\link{compareFit}}
+\code{\link{getResiduals}}, \code{\link{plot.mcr}},
+\code{\link{plotDifference}}, \code{\link{plotBias}},
+\code{\link{compareFit}}
 }
 

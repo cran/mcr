@@ -179,40 +179,71 @@ MCResult.getData <- function(.Object)
 #' @aliases getResiduals
 MCResult.getResiduals <- function(.Object) 
 {
-  weight <- getWeights(.Object)
-  x <- .Object@data$x
-  y <- .Object@data$y
-  lmb <- .Object@error.ratio
-  a <- .Object@para["Intercept",1]
-  b <- .Object@para["Slope",1]
-  d <- y-(a+b*x)
+    weight <- getWeights(.Object)
+    x <- .Object@data$x
+    y <- .Object@data$y
+    lmb <- .Object@error.ratio
+    a <- .Object@para["Intercept",1]
+    b <- .Object@para["Slope",1]
+    d <- y-(a+b*x)
            
-  if (.Object@regmeth %in% c("LinReg","WLinReg")){
+    if (.Object@regmeth %in% c("LinReg","WLinReg")){
         xhat <- x
         yhat <- a + b*x
-  } else {
-  
-            xhat <- x+lmb*b*d/(1+lmb*b^2)
-            yhat <- y-d/(1+lmb*b^2)
-          
-          }
- xres <- x-xhat
- yres <- y-yhat
+    } else {
+        xhat <- x+lmb*b*d/(1+lmb*b^2)
+        yhat <- y-d/(1+lmb*b^2)
+    }
+    xres <- x-xhat
+    yres <- y-yhat
  
- if (.Object@regmeth %in% c("LinReg","WLinReg")){
- 
-      res <- yres*sqrt(weight) 
- 
- } else {
-                 
-              res <- sign(yres)*sqrt((xres)^2+(yres)^2)*sqrt(weight)
-              res <- res*sqrt(weight)
-         }     
-         
-  result <- data.frame(x=xres, y=yres, optimized=res)
-         
-	return(result)
+    if (.Object@regmeth %in% c("LinReg","WLinReg")){
+        res <- yres*sqrt(weight)
+    } else {
+        res <- sign(yres)*sqrt((xres)^2+lmb*(yres)^2)*sqrt(weight)
+    }     
+
+    result <- data.frame(x=xres, y=yres, optimized=res)
+
+    return(result)
 }
+
+
+#' Get Fitted Values.
+#' 
+#' This funcion computes fitted values for a 'MCResult'-object. Depending
+#' on the regression method and the error ratio, a projection onto the regression
+#' line is performed accordingly. For each point (x_i; y_i) i=1,...,n the projected
+#' point(x_hat_i; y_hat_i) is computed.
+#' 
+#' @param .Object object of class "MCResult".
+#' @return fitted values as data frame.
+#' @seealso \code{\link{plotResiduals}} \code{\link{getResiduals}} 
+#' @aliases getFitted
+MCResult.getFitted <- function(.Object)
+{
+    x <- .Object@data$x
+    y <- .Object@data$y
+    lmb <- .Object@error.ratio
+    a <- .Object@para["Intercept",1]
+    b <- .Object@para["Slope",1]
+    
+    d <- y-(a+b*x)
+        
+    if (.Object@regmeth %in% c("LinReg","WLinReg"))
+    {
+        xhat <- x
+        yhat <- a + b*x
+    } 
+    else
+    { 
+        xhat <- x+lmb*b*d/(1+lmb*b^2)
+        yhat <- y-d/(1+lmb*b^2)
+    } 
+    
+    return(data.frame(x_hat=xhat,y_hat=yhat))
+}
+
 
 #' Get Regression Method
 #'

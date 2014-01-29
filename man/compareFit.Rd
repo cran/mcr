@@ -2,17 +2,17 @@
 \alias{compareFit}
 \title{Graphical Comparison of Regression Parameters and Associated Confidence Intervals}
 \usage{
-  compareFit(...)
+compareFit(...)
 }
 \arguments{
   \item{...}{list of fitted models, i.e. objects of
   "MCResult" sub-classes.}
 }
 \description{
-  Graphical comparison of regression parameters (intercept
-  and slope) and their associated 100(1-alpha)\% confidence
-  intervals for multiple fitted models of 'MCResult'
-  sub-classes.
+Graphical comparison of regression parameters (intercept
+and slope) and their associated 100(1-alpha)\% confidence
+intervals for multiple fitted models of 'MCResult'
+sub-classes.
 }
 \examples{
 library("mcr")

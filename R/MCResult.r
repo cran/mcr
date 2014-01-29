@@ -82,6 +82,9 @@ setMethod("getWeights",signature=c(.Object="MCResult"),definition=MCResult.getWe
 setGeneric("getResiduals",function(.Object,...){standardGeneric("getResiduals")})
 setMethod("getResiduals",signature=c(.Object="MCResult"),definition=MCResult.getResiduals)
 
+setGeneric("getFitted",function(.Object,...){standardGeneric("getFitted")})
+setMethod("getFitted",signature=c(.Object="MCResult"),definition=MCResult.getFitted)
+
 setGeneric("getRegmethod",function(.Object,...){standardGeneric("getRegmethod")})
 setMethod("getRegmethod",signature=c(.Object="MCResult"),definition=MCResult.getRegmethod)
 

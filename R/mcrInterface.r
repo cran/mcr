@@ -270,6 +270,9 @@ mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
         cat("Names of test method and reference method are equal!")
   
     mnames <- c(mref.name, mtest.name)   
+    
+    ## For PaBa set error ratio 1 for correct weighted residual calculation
+    if(method.reg %in% c("PaBa", "PaBaLarge")) error.ratio <- 1
 
     if(method.reg=="WDeming" & min(data)<=0) 
         stop("Weighted Deming regression for non-positive values is not available.")

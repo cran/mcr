@@ -3,17 +3,17 @@
 \alias{plotwithRJIF}
 \title{Plotting the Relative Jackknife Influence Function}
 \usage{
-  MCResultJackknife.plotwithRJIF(.Object)
+MCResultJackknife.plotwithRJIF(.Object)
 }
 \arguments{
   \item{.Object}{object of class "MCResultJackknife" or
   "MCResultResampling"}
 }
 \description{
-  The function draws reference method vs. test method as
-  scatter plot. Observations with high influence (relative
-  jackknife influence function is greater than 2) are
-  highlighted as red points.
+The function draws reference method vs. test method as
+scatter plot. Observations with high influence (relative
+jackknife influence function is greater than 2) are
+highlighted as red points.
 }
 \examples{
 #library("mcr")
@@ -28,8 +28,7 @@
     plotwithRJIF(model)
 }
 \references{
-  Efron, B. (1990) Jackknife-After-Bootstrap Standard
-  Errors and Influence Functions.  Technical Report ,
-  \bold{N 134}.
+Efron, B. (1990) Jackknife-After-Bootstrap Standard Errors
+and Influence Functions.  Technical Report , \bold{N 134}.
 }
 

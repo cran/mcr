@@ -131,9 +131,17 @@ mc.paba <- function(angM, X, Y, alpha=0.05, posCor=TRUE, calcCI=TRUE)
 	## Two times index of median
 	nValIndex2 <- nAllItems + nOffset2	
 	## Sort and select median (NAs are dropped)
-	half <- (nValIndex2+1L)%/%2L   
-   
-	if(nValIndex2%%2L == 1L) 
+	half <- (nValIndex2+1L)%/%2L
+    
+    ## Extreme case half==0 can happen and results in invalid index => simply shift by 1
+    if(half==0) half <- 1
+
+    ## Shifted median should always be valid data index
+    stopifnot(half<=nAllItems & half>0)
+
+    ## Extreme case half==nAllItems can happen, for even nAllItems equation for b in PaBa paper
+    ## then undefined since second index out of bounds => simply calculate b as in odd nAllItems case
+	if((nValIndex2%%2L == 1L) || (half==nAllItems)) 
     {
 		if(calcCI) 
             sortedM <- sort(angM) # complete sorting

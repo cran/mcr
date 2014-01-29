@@ -2,8 +2,7 @@
 \alias{MCResultBCa.plotBootstrapCoefficients}
 \title{Plot distriblution of bootstrap coefficients}
 \usage{
-  MCResultBCa.plotBootstrapCoefficients(.Object,
-    breaks = 20, ...)
+MCResultBCa.plotBootstrapCoefficients(.Object, breaks = 20, ...)
 }
 \arguments{
   \item{.Object}{Object of class "MCResultBCa"}
@@ -13,7 +12,7 @@
   \item{...}{further graphical parameters}
 }
 \description{
-  Plot distriblution of bootstrap coefficients (slope and
-  intercept).
+Plot distriblution of bootstrap coefficients (slope and
+intercept).
 }
 

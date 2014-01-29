@@ -2,8 +2,7 @@
 \alias{mc.calcTstar}
 \title{Compute Resampling T-statistic.}
 \usage{
-  mc.calcTstar(.Object, x.levels, iter.max = 30,
-    threshold = 1e-06)
+mc.calcTstar(.Object, x.levels, iter.max = 30, threshold = 1e-06)
 }
 \arguments{
   \item{.Object}{object of class "MCResultResampling".}
@@ -18,16 +17,15 @@
   deming regression.}
 }
 \value{
-  Tstar numeric vector containing resampling pivot
-  statistic.
+Tstar numeric vector containing resampling pivot statistic.
 }
 \description{
-  Compute Resampling T-statistic. for Calculation of
-  t-Bootstrap Confidence Intervals.
+Compute Resampling T-statistic. for Calculation of
+t-Bootstrap Confidence Intervals.
 }
 \references{
-  Carpenter J., Bithell J.  Bootstrap confidence intervals:
-  when, which, what? A practical guide for medical
-  statisticians.  Stat Med, 19 (9), 1141-1164 (2000).
+Carpenter J., Bithell J.  Bootstrap confidence intervals:
+when, which, what? A practical guide for medical
+statisticians.  Stat Med, 19 (9), 1141-1164 (2000).
 }
 

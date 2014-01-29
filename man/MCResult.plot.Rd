@@ -1,24 +1,19 @@
 \name{MCResult.plot}
 \alias{MCResult.plot}
-\alias{plot}
 \alias{plot.mcr}
 \title{Scatter Plot Method X vs. Method Y}
 \usage{
-  MCResult.plot(x, alpha = 0.05, xn = 20,
-    equal.axis = FALSE, xlim = NULL, ylim = NULL,
-    x.lab = x@mnames[1], y.lab = x@mnames[2], add = FALSE,
-    draw.points = TRUE, points.col = "black",
-    points.pch = 1, points.cex = 0.8, reg = TRUE,
-    reg.col = NULL, reg.lty = 1, reg.lwd = 2,
-    identity = TRUE, identity.col = NULL, identity.lty = 2,
-    identity.lwd = 1, ci.area = TRUE, ci.area.col = NULL,
-    ci.border = FALSE, ci.border.col = NULL,
-    ci.border.lty = 2, ci.border.lwd = 1,
-    add.legend = TRUE,
-    legend.place = c("topleft", "topright", "bottomleft", "bottomright"),
-    main = NULL, sub = NULL, add.cor = TRUE,
-    cor.method = c("pearson", "kendall", "spearman"),
-    add.grid = TRUE, ...)
+MCResult.plot(x, alpha = 0.05, xn = 20, equal.axis = FALSE, xlim = NULL,
+  ylim = NULL, x.lab = x@mnames[1], y.lab = x@mnames[2], add = FALSE,
+  draw.points = TRUE, points.col = "black", points.pch = 1,
+  points.cex = 0.8, reg = TRUE, reg.col = NULL, reg.lty = 1,
+  reg.lwd = 2, identity = TRUE, identity.col = NULL, identity.lty = 2,
+  identity.lwd = 1, ci.area = TRUE, ci.area.col = NULL,
+  ci.border = FALSE, ci.border.col = NULL, ci.border.lty = 2,
+  ci.border.lwd = 1, add.legend = TRUE, legend.place = c("topleft",
+  "topright", "bottomleft", "bottomright"), main = NULL, sub = NULL,
+  add.cor = TRUE, cor.method = c("pearson", "kendall", "spearman"),
+  add.grid = TRUE, ...)
 }
 \arguments{
   \item{x}{object of class "MCResult".}
@@ -120,9 +115,9 @@
   \item{...}{further graphical parameters}
 }
 \description{
-  Plot method X (reference) vs. method Y (test) with
-  (optional) line of identity, regression line and
-  confidence bounds for response.
+Plot method X (reference) vs. method Y (test) with
+(optional) line of identity, regression line and confidence
+bounds for response.
 }
 \examples{
 library(mcr)
@@ -149,8 +144,8 @@ library(mcr)
                            colors=c("darkblue","red"), design="1", digits=2)
 }
 \seealso{
-  \code{\link{plotBias}}, \code{\link{plotResiduals}},
-  \code{\link{plotDifference}},
-  \code{\link{compareFit}},\code{\link{includeLegend}}
+\code{\link{plotBias}}, \code{\link{plotResiduals}},
+\code{\link{plotDifference}},
+\code{\link{compareFit}},\code{\link{includeLegend}}
 }
 

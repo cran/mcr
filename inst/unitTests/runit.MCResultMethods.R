@@ -76,32 +76,38 @@ test.getWeights.call <- function()
 
 
 
-## Check if method 'calcCUSUM' of class 'MCResult' yields the correct result for dummy-data.
+## Check if method 'getResiduals' of class 'MCResult' yields the correct result for dummy-data.
 
 test.getResiduals.call <- function()
 {
     ## Some test data
     data.x <- 1:10
     data.y <- c(1,3,2,4,6,5,7,9,8,10)
-    res.y <- c(-0.01049672,   0.54946052,  -0.56345615,  -0.00349890,   
-                0.55645834,   -0.55645834,   0.00349890,   0.56345615,  
-                -0.54946052,  0.01049672)
-               
-    res.x <- c(   0.00836225,  -0.43772965,   0.44887932,   0.00278741,  
-                 -0.44330449,   0.44330449,  -0.00278741,  -0.44887932,   
-                 0.43772965, -0.00836225)
-                 
-    res <- c(  -0.01342044,   0.70250560,  -0.72039953,  -0.00447348,
-                0.71145257,  -0.71145257,   0.00447348,   0.72039953,  
-                -0.70250560,  0.01342044)                        
-    res.xy <- data.frame(x=res.x, y=res.y, optimized=res)
-    rownames(res.xy) <- paste("S", 1:10, sep="")
        
     obj.lr.num <- mcreg(data.x, data.y, method.reg="Deming", error.ratio=0.8)
-    
-    checkEquals(getResiduals(obj.lr.num), res.xy, , tolerance = 10^-7)
-    #checkException(getResiduals(obj.lr.num, orth="maybe"))
+
+    ## currently no reference data available
 }
+
+
+
+## Check if method 'getFitted' of class 'MCResult' yields consistent results.
+
+test.getFitted.call <- function()
+{
+
+    data(creatinine)
+    crea <- creatinine[complete.cases(creatinine),]
+    
+    obj.lr.num <- mcreg(crea[,1],crea[,2], method.reg="Deming", error.ratio=0.8)
+    
+    d_hat1 <- crea-getResiduals(obj.lr.num)[,c("x","y")]
+    d_hat2 <- getFitted(obj.lr.num)
+    
+    checkEquals(d_hat1[,1],d_hat2[,1],tolerance = 10^-7)
+    checkEquals(d_hat1[,2],d_hat2[,2],tolerance = 10^-7)
+}
+
 
 ## Check if method 'getRegmethod' of class 'MCResult' yields the correct names of the regression.
 

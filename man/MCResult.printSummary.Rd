@@ -3,15 +3,15 @@
 \alias{printSummary}
 \title{Print Summary of a Regression Analysis}
 \usage{
-  MCResult.printSummary(.Object)
+MCResult.printSummary(.Object)
 }
 \arguments{
   \item{.Object}{object of type "MCResult".}
 }
 \description{
-  Print Summary of a Regression Analysis
+Print Summary of a Regression Analysis
 }
 \seealso{
-  \code{\link{getCoefficients}}, \code{\link{getRegmethod}}
+\code{\link{getCoefficients}}, \code{\link{getRegmethod}}
 }
 

@@ -3,15 +3,13 @@
 \alias{plotDifference}
 \title{Bland-Altman Plot}
 \usage{
-  MCResult.plotDifference(.Object, xlab = NULL,
-    ylab = NULL, ref.line = TRUE, ref.line.col = "black",
-    ref.line.lty = 1, ref.line.lwd = 1, bias.line.lty = 1,
-    bias.line.lwd = 1, bias.line.col = "red",
-    bias.text.col = NULL, bias.text.cex = 0.8,
-    loa.line.lty = 2, loa.line.lwd = 1,
-    loa.line.col = "red", loa.text.col = NULL,
-    plot.type = 3, main = NULL, cex = 0.8, digits = 2,
-    add.grid = TRUE, ylim = NULL, ...)
+MCResult.plotDifference(.Object, xlab = NULL, ylab = NULL,
+  ref.line = TRUE, ref.line.col = "black", ref.line.lty = 1,
+  ref.line.lwd = 1, bias.line.lty = 1, bias.line.lwd = 1,
+  bias.line.col = "red", bias.text.col = NULL, bias.text.cex = 0.8,
+  loa.line.lty = 2, loa.line.lwd = 1, loa.line.col = "red",
+  loa.text.col = NULL, plot.type = 3, main = NULL, cex = 0.8,
+  digits = 2, add.grid = TRUE, ylim = NULL, ...)
 }
 \arguments{
   \item{.Object}{object of class "MCResult".}
@@ -88,8 +86,8 @@
   \item{...}{further graphical parameters}
 }
 \description{
-  Draw different Bland-Altman plot modifications (see
-  parameter \code{plot.type}).
+Draw different Bland-Altman plot modifications (see
+parameter \code{plot.type}).
 }
 \examples{
 #library("mcr")
@@ -108,13 +106,13 @@
     plotDifference( model, plot.type=7, ref.line.lty=3, ref.line.col="green3" )
 }
 \references{
-  Bland, J. M., Altman, D. G. (1986) Statistical methods
-  for assessing agreement between two methods of clinical
-  measurement.  \emph{Lancet}, \bold{i:} 307--310.
+Bland, J. M., Altman, D. G. (1986) Statistical methods for
+assessing agreement between two methods of clinical
+measurement.  \emph{Lancet}, \bold{i:} 307--310.
 }
 \seealso{
-  \code{\link{plot.mcr}}, \code{\link{plotResiduals}},
-  \code{\link{plotDifference}}, \code{\link{plotBias}},
-  \code{\link{compareFit}}
+\code{\link{plot.mcr}}, \code{\link{plotResiduals}},
+\code{\link{plotDifference}}, \code{\link{plotBias}},
+\code{\link{compareFit}}
 }
 

@@ -207,7 +207,8 @@ mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaB
     {
         ## For slope matrix determine if slope 1 or -1 is expected based on full data set
         paba.posCor <- cor(X,Y,method="kendall") >= 0
-		## Compute slope matrix once for all further computations
+		## Compute slope matrix once for all further computations,
+        ## global estimation of posCor means global +/-Inf assignment but should not impact CI estimates due to index shift
         paba.angM <- mc.calcAngleMat(X,Y,posCor=paba.posCor)
         ## Regression function
         callfun.reg<- function(idx)

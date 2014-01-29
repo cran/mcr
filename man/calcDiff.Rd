@@ -3,7 +3,7 @@
 \title{Calculate difference between two numeric vectors that
 gives exactly zero for very small relative differences.}
 \usage{
-  calcDiff(X, Y, EPS = 1e-12)
+calcDiff(X, Y, EPS = 1e-12)
 }
 \arguments{
   \item{X}{first number}
@@ -13,10 +13,10 @@ gives exactly zero for very small relative differences.}
   \item{EPS}{relative difference equivalent to zero}
 }
 \value{
-  difference
+difference
 }
 \description{
-  Calculate difference between two numeric vectors that
-  gives exactly zero for very small relative differences.
+Calculate difference between two numeric vectors that gives
+exactly zero for very small relative differences.
 }
 

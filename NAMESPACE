@@ -1,6 +1,7 @@
 useDynLib(mcr, .registration=TRUE)
 
 ### imported generics and functions
+import(methods)
 importFrom("graphics","plot")
 
 ### Generics and functions defined in this package
@@ -15,6 +16,7 @@ export(
 	"getWeights",
 	"getRegmethod",
 	"getResiduals",
+	"getFitted",
 	"getRJIF",
 	"includeLegend",
 	"mcreg",
@@ -32,6 +34,7 @@ export(
 	"MCResult.getErrorRatio",
 	"MCResult.getRegmethod",
 	"MCResult.getResiduals",
+	"MCResult.getFitted",
 	"MCResult.getWeights",
 	"MCResult.initialize",
 	"MCResult.plot",

@@ -1,9 +1,9 @@
 \name{MCResult.calcResponse}
-\alias{calcResponse}
 \alias{MCResult.calcResponse}
+\alias{calcResponse}
 \title{Calculate Response with Confidence Interval.}
 \usage{
-  MCResult.calcResponse(.Object, x.levels, alpha, ...)
+MCResult.calcResponse(.Object, x.levels, alpha, ...)
 }
 \arguments{
   \item{.Object}{object of class "MCResult".}
@@ -18,12 +18,12 @@
   \item{...}{further parameters}
 }
 \value{
-  response and corresponding confidence interval for each
-  point in vector \code{x.levels}.
+response and corresponding confidence interval for each
+point in vector \code{x.levels}.
 }
 \description{
-  Calculate Response \eqn{Intercept + Slope *
-  Refrencemethod} with Corresponding Confidence Interval
+Calculate Response \eqn{Intercept + Slope * Refrencemethod}
+with Corresponding Confidence Interval
 }
 \examples{
 #library("mcr")
@@ -38,6 +38,6 @@
     calcResponse(model, x.levels=c(1,2,3))
 }
 \seealso{
-  \code{\link{calcBias}}
+\code{\link{calcBias}}
 }
 

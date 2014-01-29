@@ -79,7 +79,7 @@ SEXP calcAngleMat(SEXP X, SEXP Y, SEXP posCor)
 					if(pCor) pans[j+nData*k] = M_PI_2;
 					else pans[j+nData*k] = -M_PI_2;
 				}
-				else pans[j+nData*k] = NA_REAL; // x==0, dy==0, set to NA
+				else pans[j+nData*k] = NA_REAL; // dx==0, dy==0, set to NA
 			}
 			else pans[j+nData*k] = NA_REAL; // not upper triangle, set to NA
 		}

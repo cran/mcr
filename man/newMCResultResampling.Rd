@@ -2,13 +2,11 @@
 \alias{newMCResultResampling}
 \title{MCResultResampling object constructor with matrix in wide format as input.}
 \usage{
-  newMCResultResampling(wdata, para, xmean,
-    sample.names = NULL, method.names = NULL,
-    regmeth = "unknown", glob.coef, glob.sigma,
-    cimeth = "unknown", bootcimeth = "unknown", nsamples,
-    nnested, rng.seed, rng.kind, B0, B1, MX, sigmaB0,
-    sigmaB1, error.ratio, alpha = 0.05,
-    weight = rep(1, nrow(wdata)))
+newMCResultResampling(wdata, para, xmean, sample.names = NULL,
+  method.names = NULL, regmeth = "unknown", glob.coef, glob.sigma,
+  cimeth = "unknown", bootcimeth = "unknown", nsamples, nnested, rng.seed,
+  rng.kind, B0, B1, MX, sigmaB0, sigmaB1, error.ratio, alpha = 0.05,
+  weight = rep(1, nrow(wdata)))
 }
 \arguments{
   \item{wdata}{Measurement data in matrix format. First
@@ -79,10 +77,10 @@
   for each point}
 }
 \value{
-  MCResult object containing regression results.
+MCResult object containing regression results.
 }
 \description{
-  MCResultResampling object constructor with matrix in wide
-  format as input.
+MCResultResampling object constructor with matrix in wide
+format as input.
 }
 

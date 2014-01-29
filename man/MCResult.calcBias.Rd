@@ -1,11 +1,10 @@
 \name{MCResult.calcBias}
-\alias{calcBias}
 \alias{MCResult.calcBias}
+\alias{calcBias}
 \title{Systematical Bias Between Reference Method and Test Method}
 \usage{
-  MCResult.calcBias(.Object, x.levels,
-    type = c("absolute", "proportional"), percent = TRUE,
-    alpha = 0.05, ...)
+MCResult.calcBias(.Object, x.levels, type = c("absolute", "proportional"),
+  percent = TRUE, alpha = 0.05, ...)
 }
 \arguments{
   \item{.Object}{object of class "MCResult".}
@@ -26,14 +25,14 @@
   \item{...}{further parameters}
 }
 \value{
-  response and corresponding confidence interval for each
-  decision point from x.levels.
+response and corresponding confidence interval for each
+decision point from x.levels.
 }
 \description{
-  Calculate systematical bias between reference and test
-  methods at the decision point Xc as \eqn{ Bias(Xc) =
-  Intercept + (Slope-1) * Xc} with corresponding confidence
-  intervals.
+Calculate systematical bias between reference and test
+methods at the decision point Xc as \eqn{ Bias(Xc) =
+Intercept + (Slope-1) * Xc} with corresponding confidence
+intervals.
 }
 \examples{
 #library("mcr")
@@ -56,6 +55,6 @@
     calcBias( model, x.levels = c(1,2,3), type = "proportional", percent = FALSE)
 }
 \seealso{
-  \code{\link{plotBias}}
+\code{\link{plotBias}}
 }
 
