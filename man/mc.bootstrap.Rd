@@ -5,7 +5,8 @@
 mc.bootstrap(method.reg = c("LinReg", "WLinReg", "Deming", "WDeming", "PaBa",
   "PaBaLarge"), X, Y, error.ratio, nsamples = 1000, jackknife = TRUE,
   bootstrap = c("none", "bootstrap", "nestedbootstrap"), nnested = 25,
-  iter.max = 30, threshold = 1e-08, NBins = 1e+06)
+  iter.max = 30, threshold = 1e-08, NBins = 1e+06,
+  slope.measure = c("radian", "tangent"))
 }
 \arguments{
   \item{X}{Measurement values of reference method}
@@ -41,7 +42,16 @@ mc.bootstrap(method.reg = c("LinReg", "WLinReg", "Deming", "WDeming", "PaBa",
 
   \item{NBins}{number of bins used when
   'reg.method="PaBaLarge"' to classify each slope in one of
-  'NBins' bins covering the range of all slopes}
+  'NBins' bins of constant slope angle covering the range
+  of all slopes.}
+
+  \item{slope.measure}{angular measure of pairwise slopes
+  used for exact PaBa regression (see \code{\link{mcreg}}
+  for details).\cr  \code{"radian"} - for data sets with even
+  sample numbers median slope is calculated as average of
+  two central slope angles.\cr \code{"tangent"} - for data sets
+  with even sample numbers median slope is calculated as
+  average of two central slopes (tan(angle)).\cr}
 }
 \value{
 a list consisting of \item{glob.coef}{Numeric vector of
@@ -85,7 +95,7 @@ coefficients.
 }
 \author{
 Ekaterina Manuilova
-\email{ekaterina.manuilova@contractors.roche.com}, Fabian
+\email{ekaterina.manuilova@roche.com}, Fabian
 Model \email{fabian.model@roche.com}
 }
 \references{

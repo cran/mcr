@@ -42,7 +42,10 @@
 #' @param nnested Number of nested bootstrap samples.
 #' @param iter.max maximum number of iterations for weighted Deming iterative algorithm.
 #' @param threshold Numerical tolerance for weighted Deming iterative algorithm convergence.
-#' @param NBins number of bins used when 'reg.method="PaBaLarge"' to classify each slope in one of 'NBins' bins covering the range of all slopes
+#' @param NBins number of bins used when 'reg.method="PaBaLarge"' to classify each slope in one of 'NBins' bins of constant slope angle covering the range of all slopes.
+#' @param slope.measure angular measure of pairwise slopes used for exact PaBa regression (see \code{\link{mcreg}} for details).\cr   
+#'          \code{"radian"} - for data sets with even sample numbers median slope is calculated as average of two central slope angles.\cr
+#'          \code{"tangent"} - for data sets with even sample numbers median slope is calculated as average of two central slopes (tan(angle)).\cr
 #' @return a list consisting of 
 #'  \item{glob.coef}{Numeric vector of length two with global point estimations of intercept and slope.} 
 #'  \item{glob.sigma}{Numeric vector of length two with global estimations of standard errors of intercept and slope.} 
@@ -70,14 +73,15 @@
 #'              Carpenter, J., Bithell, J. (2000)
 #'              Bootstrap confidence intervals: when, which, what? A practical guide for medical statisticians.
 #'              \emph{Stat Med}, \bold{19 (9)}, 1141--1164.
-#' @author Ekaterina Manuilova \email{ekaterina.manuilova@@contractors.roche.com}, Fabian Model \email{fabian.model@@roche.com}
+#' @author Ekaterina Manuilova \email{ekaterina.manuilova@@roche.com}, Fabian Model \email{fabian.model@@roche.com}
 
 mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaBa", "PaBaLarge"), X, Y, error.ratio,
                          nsamples=1000, jackknife=TRUE, bootstrap=c("none","bootstrap", "nestedbootstrap"),
-                         nnested=25, iter.max=30, threshold=0.00000001, NBins=1000000) 
+                         nnested=25, iter.max=30, threshold=0.00000001, NBins=1000000, slope.measure=c("radian","tangent")) 
 {
 	method.reg <- match.arg(method.reg)
 	bootstrap <- match.arg(bootstrap)
+    slope.measure <- match.arg(slope.measure)
 
 	# Check validity of parameters
 	stopifnot(is.numeric(X))
@@ -206,10 +210,10 @@ mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaB
 	else if(method.reg == "PaBa") 
     {
         ## For slope matrix determine if slope 1 or -1 is expected based on full data set
-        paba.posCor <- cor(X,Y,method="kendall") >= 0
+        paba.posCor.global <- cor(X,Y,method="kendall") >= 0
 		## Compute slope matrix once for all further computations,
-        ## global estimation of posCor means global +/-Inf assignment but should not impact CI estimates due to index shift
-        paba.angM <- mc.calcAngleMat(X,Y,posCor=paba.posCor)
+        ## global estimation of posCor means global +/-Inf assignment - needs to be corrected if correlation changes due to resampling
+        paba.angM.global <- mc.calcAngleMat(X,Y,posCor=paba.posCor.global)
         ## Regression function
         callfun.reg<- function(idx)
         {
@@ -223,7 +227,16 @@ mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaB
             ## For actual regression determine if slope 1 or -1 is expected based on resampled data set!
             paba.posCor <- cor(X[idx],Y[idx],method="kendall") >= 0
             ## Run Passing-Bablok
-		  	mc.res <- mc.paba(paba.angM[idx,idx],X[idx],Y[idx],posCor=paba.posCor,calcCI=FALSE)		
+		  	if(paba.posCor.global==paba.posCor)
+            {
+                ## Correlation sign did not change by resampling - use resampled angle matrix
+                mc.res <- mc.paba(paba.angM.global[idx,idx],X[idx],Y[idx],posCor=paba.posCor,calcCI=FALSE,slope.measure=slope.measure)
+            } else {
+                ## Correlation sign did change by resampling - re-calculate angle matrix
+                paba.angM.rec <- mc.calcAngleMat(X[idx],Y[idx],posCor=paba.posCor)
+                mc.res <- mc.paba(paba.angM.rec,X[idx],Y[idx],posCor=paba.posCor,calcCI=FALSE,slope.measure=slope.measure)
+                rm(paba.angM.rec)
+            }
 			return(list(b0=mc.res["Intercept","EST"],b1=mc.res["Slope","EST"],xw=as.numeric(NA)))
         }
     }

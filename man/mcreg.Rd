@@ -9,7 +9,7 @@ mcreg(x, y = NULL, error.ratio = 1, alpha = 0.05, mref.name = NULL,
   method.bootstrap.ci = c("quantile", "Student", "BCa", "tBoot"),
   nsamples = 999, nnested = 25, rng.seed = NULL,
   rng.kind = "Mersenne-Twister", iter.max = 30, threshold = 1e-06,
-  na.rm = FALSE, NBins = 1e+06)
+  na.rm = FALSE, NBins = 1e+06, slope.measure = c("radian", "tangent"))
 }
 \arguments{
   \item{x}{measurement values of reference method, or two
@@ -41,9 +41,10 @@ mcreg(x, y = NULL, error.ratio = 1, alpha = 0.05, mref.name = NULL,
   - weighted Deming regression.\cr \code{"PaBa"} -
   Passing-Bablok regression.\cr \code{"PaBaLarge"} -
   approximative Passing-Bablok regression for large
-  datasets, operating on \code{NBins} classes which each
-  slope is classified to instead of building the complete
-  triangular matrix of all N*N/2 slopes.}
+  datasets, operating on \code{NBins} classes of constant
+  slope angle which each slope is classified to instead of
+  building the complete triangular matrix of all N*N/2
+  slopes.}
 
   \item{method.ci}{method of confidence interval
   calculation. The function contains four basic methods for
@@ -52,7 +53,7 @@ mcreg(x, y = NULL, error.ratio = 1, alpha = 0.05, mref.name = NULL,
   method.\cr \code{"jackknife"} - with leave one out
   resampling.\cr \code{"bootstrap"} - with ordinary
   non-parametric bootstrap resampling.\cr \code{"nested
-  bootstrap"} - with ordinary nonparametric bootstrap
+  bootstrap"} - with ordinary non-parametric bootstrap
   resampling.\cr}
 
   \item{method.bootstrap.ci}{bootstrap based confidence
@@ -83,6 +84,14 @@ mcreg(x, y = NULL, error.ratio = 1, alpha = 0.05, mref.name = NULL,
   \item{NBins}{number of bins used when
   'reg.method="PaBaLarge"' to classify each slope in one of
   'NBins' bins covering the range of all slopes}
+
+  \item{slope.measure}{angular measure of pairwise slopes
+  used for exact PaBa regression (see below for details).\cr
+  \code{"radian"} - for data sets with even sample numbers
+  median slope is calculated as average of two central
+  slope angles.\cr \code{"tangent"} - for data sets with even
+  sample numbers median slope is calculated as average of
+  two central slopes (tan(angle)).\cr}
 }
 \value{
 "MCResult" object containing regression results. The
@@ -141,20 +150,7 @@ available for all types of regression except for weighted
 Deming. For Passing-Bablok regression the option
 "analytical" calculates confidence intervals for the
 regression parameters according to the non-parametric
-approach given in the original reference. Note that
-estimating resampling based confidence intervals for
-Passing-Bablok regressions can take very long for larger
-data sets due to the high computational complexity of the
-algorithm. To mitigate this drawback an adaption of the
-Passing-Bablok algorithm has been implemented
-("PaBaLarge"), which yields approximative results. This
-approach does not build the complete upper triangular
-matrix of all 'n*(n-1)/2' slopes. It subdivides the range
-of slopes into 'NBins' classes, and sorts each slope into
-one of these bins. The remaining steps are the same as for
-the exact "PaBa" algorithm, except that these are performed
-on the binned slopes instead of operating on the matrix of
-slopes.
+approach given in the original reference.
 
 The "jackknife" (or leave one out resampling) method was
 suggested by Linnet for calculating confidence intervals of
@@ -177,32 +173,78 @@ confidence intervals for weighted Deming or Passing-Bablok
 regression. For these regression methods there are no
 analytical solutions for computing standard errors, which
 therefore have to be obtained by nested bootstrapping.
+
+Note that estimating resampling based confidence intervals
+for Passing-Bablok regressions can take very long for
+larger data sets due to the high computational complexity
+of the algorithm. To mitigate this drawback an adaption of
+the Passing-Bablok algorithm has been implemented
+(\code{"PaBaLarge"}), which yields approximative results.
+This approach does not build the complete upper triangular
+matrix of all 'n*(n-1)/2' slopes. It subdivides the range
+of slopes into 'NBins' classes, and sorts each slope into
+one of these bins. The remaining steps are the same as for
+the exact \code{"PaBa"} algorithm, except that these are
+performed on the binned slopes instead of operating on the
+matrix of slopes.
+
+Our implementation of exact Passing-Bablok regression
+(\code{"PaBa"}) provides two alternative metrics for
+regression slopes which can result in different regression
+estimates. As a robust regression method PaBa is
+essentially invariant to the parameterization of regression
+slopes, however in the case of an even number of all
+pairwise slopes the two central slopes are averaged to
+estimate the final regression slope. In this situation
+using an angle based metric (\code{slope.measure="radian"})
+will result in a regression estimate that is geometrically
+centered between the two central slopes, whereas the
+tangent measure (\code{slope.measure="tangent"}) proposed
+in Passing and Bablok (1983) will be geometrically biased
+towards a higher slope. See below for a pathological
+example. Note that the difference between the two measures
+is neglectable for data sets with reasonable sample size
+(N>20) and correlation.
 }
 \examples{
 library("mcr")
-    data(creatinine,package="mcr")
-    x <- creatinine$serum.crea
-    y <- creatinine$plasma.crea
-    # Deming regression fit.
-    # The confidence intercals for regression coefficients
-    # are calculated with analytical method
-    model1<- mcreg(x,y,error.ratio=1,method.reg="Deming", method.ci="analytical",
-                     mref.name = "serum.crea", mtest.name = "plasma.crea", na.rm=TRUE)
-    # Results
-    printSummary(model1)
-    getCoefficients(model1)
-    plot(model1)
-    # Deming regression fit.
-    # The confidence intervals for regression coefficients
-    # are calculated with bootstrap (BCa) method
-    model2<- mcreg(x,y,error.ratio=1,method.reg="Deming",
-                   method.ci="bootstrap", method.bootstrap.ci = "BCa",
-                   mref.name = "serum.crea", mtest.name = "plasma.crea", na.rm=TRUE)
-    compareFit(model1, model2)
+data(creatinine,package="mcr")
+x <- creatinine$serum.crea
+y <- creatinine$plasma.crea
+# Deming regression fit.
+# The confidence intercals for regression coefficients
+# are calculated with analytical method
+model1<- mcreg(x,y,error.ratio=1,method.reg="Deming", method.ci="analytical",
+               mref.name = "serum.crea", mtest.name = "plasma.crea", na.rm=TRUE)
+# Results
+printSummary(model1)
+getCoefficients(model1)
+plot(model1)
+# Deming regression fit.
+# The confidence intervals for regression coefficients
+# are calculated with bootstrap (BCa) method
+model2<- mcreg(x,y,error.ratio=1,method.reg="Deming",
+               method.ci="bootstrap", method.bootstrap.ci = "BCa",
+               mref.name = "serum.crea", mtest.name = "plasma.crea", na.rm=TRUE)
+compareFit(model1, model2)
+
+## Pathological example of Passing-Bablok regression where measure for slope angle matters
+x1 <- 1:10; y1 <- 0.5*x1; x <- c(x1,y1); y <- c(y1,x1)
+m1 <- mcreg(x,y,method.reg="PaBa",method.ci="analytical",slope.measure="radian",
+            mref.name="X",mtest.name="Y")
+m2 <- mcreg(x,y,method.reg="PaBa",method.ci="analytical",slope.measure="tangent",
+            mref.name="X",mtest.name="Y")
+plot(m1, add.legend=FALSE,identity=FALSE,
+     main="Radian vs. tangent slope measures in Passing-Bablok regression\n(pathological example)",
+     ci.area=FALSE,add.cor=FALSE)
+plot(m2, ci.area=FALSE,reg.col="darkgreen",reg.lty=2,identity=FALSE,add.legend=FALSE,
+     draw.points=FALSE,add=TRUE,add.cor=FALSE)
+includeLegend(place="topleft",models=list(m1,m2),model.names=c("PaBa Radian","PaBa Tangent"),
+              colors=c("darkblue","darkgreen"),lty=c(1,2),design="1",digits=2)
 }
 \author{
 Ekaterina Manuilova
-\email{ekaterina.manuilova@contractors.roche.com}, Andre
+\email{ekaterina.manuilova@roche.com}, Andre
 Schuetzenmeister \email{andre.schuetzenmeister@roche.com},
 Fabian Model \email{fabian.model@roche.com}
 }

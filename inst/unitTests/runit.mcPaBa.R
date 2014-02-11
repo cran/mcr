@@ -190,24 +190,41 @@ test.mc.paba.call <- function()
         
     paba.td75 <- mcr:::mc.paba( mcr:::mc.calcAngleMat(X.td75, Y.td75, posCor=posCor), X.td75, Y.td75, posCor=posCor, calcCI=TRUE)
         
-    checkEquals( paba.td75, calanas.td75, tolerance=10e-14 )  
-    
-    
-    # Check problematic uncorrelated data set for borderline case where shift index K is half the sample size
-    # this would result in index error with original PaBa equations. Should be properly handled by our PaBa implementation.
+    checkEquals( paba.td75, calanas.td75, tolerance=10e-14 )     
+}
 
-    td.idxprob <- matrix(ncol=2,byrow=T,data=c(1.25,1.81,1.11,1.15,1.67,0.78,1.22,1.53,1.33,1.22,0.99,1.06,1.40,1.30,1.34,0.82,0.53,2.30,1.52,2.11))
-    posCor <- ifelse(cor(td.idxprob[,1],td.idxprob[,2],method="kendall") >= 0, TRUE, FALSE)
-    angM <- mcr:::mc.calcAngleMat(td.idxprob[,1],td.idxprob[,2], posCor)
+test.mc.paba.resampling1 <- function()
+{
+	
+	# Check problematic uncorrelated data set for borderline case where shift index K is half the sample size
+	# this would result in index error with original PaBa equations. Should be properly handled by our PaBa implementation.
+	
+	td.idxprob <- matrix(ncol=2,byrow=T,data=c(1.25,1.81,1.11,1.15,1.67,0.78,1.22,1.53,1.33,1.22,0.99,1.06,1.40,1.30,1.34,0.82,0.53,2.30,1.52,2.11))
+	posCor <- ifelse(cor(td.idxprob[,1],td.idxprob[,2],method="kendall") >= 0, TRUE, FALSE)
+	angM <- mcr:::mc.calcAngleMat(td.idxprob[,1],td.idxprob[,2], posCor)
+	
+	set.seed(42)
+	f <- function(x,y) {
+		ind <- sample(1:length(x), length(x), replace=TRUE)
+		posCor <- ifelse(cor(x[ind],y[ind],method="kendall") >= 0, TRUE, FALSE)
+		test1 <- try( mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=FALSE) )		# test without CI
+		checkTrue( class(test1) != "try-error")
+		test2 <- try( mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=TRUE) )		# test with CI
+		checkTrue( class(test2) != "try-error")
+	}
+	
+	for(i in 1:2000) {f(td.idxprob[,1],td.idxprob[,2])} # call mc.paba with different data configurations, first occurence of K=N/2 configuration in iteration 734
 
-    set.seed(42)
-    f <- function(x,y) {
-        ind <- sample(1:length(x), length(x), replace=TRUE)
-        posCor <- ifelse(cor(x[ind],y[ind],method="kendall") >= 0, TRUE, FALSE)
-        mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=FALSE) # test without CI
-        mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=TRUE) # test with CI
-    }
 
-    for(i in 1:2000) {f(td.idxprob[,1],td.idxprob[,2])} # call mc.paba with different data configurations, first occurence of K=N/2 configuration in iteration 734
+	# Check another problematic data constellation with seed forcing an error in the implementation untill version <=V1.2.
+	# The problem occurs due to differences in the correlation of global data and resampled data when the angle matrix
+	# is resampled from global angle matrix but correlation of method changes in sign.
+	
+	# run via interface
+	Xval <- c(4, 4.7, 6.1, 5.8, 7.2, 1.9, 4.2, 5.2, 4.8, 5.1, 5.5, 4.6, 5.4, 4.2)
+	Yval <- c(4.29, 5.08, 1.82, 2.12, 2.21, 2.01, 4.51, 1.44, 5.05, 5.53, 5.77, 1.64, 5.66, 4.52)
+	
+	fit1 <- try( mcreg(Xval, Yval, method.reg="PaBa", method.ci="bootstrap", method.bootstrap.ci="quantile", rng.seed=1458260) )	
+	checkTrue(class(fit1) != "try-error")				# no error occured	
 }
 

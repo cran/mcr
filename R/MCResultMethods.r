@@ -481,8 +481,7 @@ MCResult.plotDifference <- function(.Object,
     
     plot(X,Y,xlab=xlab,ylab=ylab,main=main,ylim=YLim,cex=cex, ...)
 	
-    if(add.grid==TRUE) 
-        grid()
+    if(add.grid) grid()
 	
     if(ref.line==TRUE)
     {
@@ -757,7 +756,7 @@ MCResult.plot <- function(x,
     else 
         titname <- "Passing Bablok Regression"
  
-    ##Colors
+    ## Colors
     niceblue <- rgb(37/255,52/255,148/255)
     niceor <- rgb(230/255,85/255,13/255)
     niceblue.bounds <- rgb(236/255, 231/255, 242/255)
@@ -780,66 +779,77 @@ MCResult.plot <- function(x,
 	else
         rx <- xlim
         
-  xd <- seq(rx[1],rx[2],length.out=xn)
-  xd <- union(xd, rx)
-  xd <- xd[order(xd)]
-	#xd <- seq(rx[1]-0.05*(rx[2]-rx[1]),rx[2]+0.05*(rx[2]-rx[1]),length.out=xn)
-    
-	#if( x@regmeth %in% c( "WDeming" , "PaBa" ) & min(xd,na.rm=TRUE)<0 ) 
-  #    xd <- xd[ which(xd>=0) ]
-	
+	xd <- seq(rx[1],rx[2],length.out=xn)
+	xd <- union(xd, rx)
+	  
+    ## additional points outer range for nice bounds
+	delta <- abs(rx[1]-rx[2])/xn
+	xd <- xd[order(xd)]
+	xd.add <- c(xd[1]-delta*1:10, xd, xd[length(xd)]+delta*1:10)
+		
+	if(is.null(xlim)) xlim <- rx
+  
+	tmp.range <- range(as.vector(x@data[,c("x","y")]), na.rm = TRUE)	
+
 	if(ci.area == TRUE | ci.border == TRUE)
     {
         bounds <- calcResponse(x,alpha=alpha,x.levels=xd)
-        if(equal.axis==TRUE)
+		bounds.add <- calcResponse(x,alpha=alpha,x.levels=xd.add)
+        
+		if(equal.axis==TRUE)
         {
-            yrange <- range(c(as.vector(x@data[,c("x","y")]),
+			xd <- seq(tmp.range[1],tmp.range[2],length.out=xn)
+			xd <- union(xd, tmp.range)
+						
+			## additional points outer range for nice bounds
+			delta <- abs(rx[1]-rx[2])/xn
+			xd <- xd[order(xd)]
+			xd.add <- c(xd[1]-delta*1:10, xd, xd[length(xd)]+delta*1:10)
+			
+			bounds <- calcResponse(x,alpha=alpha,x.levels=xd)
+			bounds.add <- calcResponse(x,alpha=alpha,x.levels=xd.add)
+			
+			yrange <- range(c(as.vector(x@data[,c("x","y")]),
                             as.vector(bounds[,c("X","Y","Y.LCI","Y.UCI")])),
-                            na.rm=TRUE)
-        }
+                            na.rm=TRUE)		
+		}
         else
         {
             yrange <- range(c(as.vector(x@data[,"y"]),
                             as.vector(bounds[,c("Y","Y.LCI","Y.UCI")])),
                             na.rm=TRUE)
         }
-    }
+    } # end if(ci.area == TRUE | ci.border == TRUE) 
     else
     {
         if(equal.axis==TRUE)
-            yrange <- range(as.vector(x@data[,c("x","y")]),na.rm=TRUE)
+            yrange <- tmp.range
         else
             yrange <- range(as.vector(x@data[,"y"]),na.rm=TRUE)
     }    
                      
-#----
-	
     if(equal.axis==TRUE)
     {
-        if(is.null(ylim)) 
-            xlim <- ylim <- yrange    	
+        if(is.null(ylim)) xlim <- ylim <- tmp.range
+        else xlim <- ylim
   	}
     else
     {
-        if(is.null(xlim))
-            xlim <- rx
-        if(is.null(ylim)) 
-            ylim <- yrange
-    }
+        if(is.null(xlim)) xlim <- rx
+        if(is.null(ylim)) ylim <- yrange
+    }		
 	
-#---- 
-
 	if(is.null(main)) 
         main <- paste(titname,"Fit")
 	   
-	if(add == FALSE)
+	if(!add)
         plot(0,0,cex=0,ylim=ylim,xlim=xlim,xlab=x.lab,ylab=y.lab,main = main, sub="", bty="n", ...)
+        
     else
     {
-        main <- ""
         sub <- ""
         add.legend <- FALSE
-        add.grid<- FALSE
+		add.grid <- FALSE
     }
   
  	if(add.cor == TRUE)
@@ -851,28 +861,25 @@ MCResult.plot <- function(x,
         mtext(side=1,line=-2,cortext,adj=0.9,font=1)
 	}
     
-#-
-
     if(ci.area == TRUE | ci.border == TRUE)
     {
         if(ci.area == TRUE)
         {
-            xxx <- c(xd,xd[order(xd,decreasing=TRUE)])
-            yy1<-c(as.vector(bounds[,"Y.LCI"]))
-            yy2<-c(as.vector(bounds[,"Y.UCI"]))
-            yyy <-c(yy1,yy2[order(xd,decreasing=TRUE)])
+            xxx <- c(xd.add,xd.add[order(xd.add,decreasing=TRUE)])
+            yy1<-c(as.vector(bounds.add[,"Y.LCI"]))
+            yy2<-c(as.vector(bounds.add[,"Y.UCI"]))
+            yyy <-c(yy1,yy2[order(xd.add,decreasing=TRUE)])
             polygon(xxx,yyy,col=ci.area.col,border="white", lty=0)
         } 
 		
+		if(add.grid) grid()
+		
         if(ci.border == TRUE)
         {
-            points(xd,bounds[,"Y.LCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
-            points(xd,bounds[,"Y.UCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
+            points(xd.add,bounds.add[,"Y.LCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
+            points(xd.add,bounds.add[,"Y.UCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
         }
-   
-        if(add.grid == TRUE) 
-            grid() 
-    
+       
         if(is.null(sub))
         {
             if(x@cimeth %in% c("bootstrap","nestedbootstrap"))
@@ -886,6 +893,7 @@ MCResult.plot <- function(x,
     }
     else
     {
+		if(add.grid) grid()
         subtext <- ifelse(is.null(sub),"",sub)
     }
    
@@ -899,15 +907,10 @@ MCResult.plot <- function(x,
     {
         b0 <- x@para["Intercept","EST"]
         b1 <- x@para["Slope","EST"]
-        xmin <- range(c(x@data[,2],xd),na.rm=TRUE)[1]
-        xmax <- range(c(x@data[,2],xd),na.rm=TRUE)[2]
-        segments(xmin,b0+b1*xmin,xmax,b0+b1*xmax,lty=reg.lty,lwd=reg.lwd,col=reg.col)
+        abline(b0, b1,,lty=reg.lty,lwd=reg.lwd,col=reg.col )
 	}
     
-	if(identity == TRUE & reg == FALSE) 
-        abline(0,1,lty=identity.lty,lwd=identity.lwd, col=identity.col)
-	if(identity == TRUE & reg == TRUE) 
-        segments(xmin,xmin,xmax,xmax,lty=identity.lty,lwd=identity.lwd, col=identity.col)
+    if(identity == TRUE)   abline(0,1,lty=identity.lty,lwd=identity.lwd, col=identity.col)    
 	if(add.legend == TRUE)
     {
         if(identity==TRUE & reg==TRUE)
@@ -1087,7 +1090,7 @@ MCResult.plotBias<-function(x,
     {
           cut.point <- cut.point[cut.point<=xlim[2] & cut.point>=xlim[1] ]
           if (length(cut.point)==0) cut.point <- NULL
-	  }
+	}
     
     b0<-x@para["Intercept","EST"]
     b1<-x@para["Slope","EST"]

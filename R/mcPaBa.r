@@ -96,8 +96,11 @@ mc.calcAngleMat <- function(X,Y,posCor=TRUE)
 #' @param alpha numeric value specifying the 100(1-alpha)% confidence level
 #' @param posCor should algorithm assume positive correlation, i.e. symmetry around slope 1?
 #' @param calcCI should confidence intervals be computed?
+#' @param slope.measure angular measure of pairwise slopes  (see \code{\link{mcreg}} for details).\cr   
+#'          \code{"radian"} - for data sets with even sample numbers median slope is calculated as average of two central slope angles.\cr
+#'          \code{"tangent"} - for data sets with even sample numbers median slope is calculated as average of two central slopes (tan(angle)).\cr
 #' @return Matrix of estimates and confidence intervals for intercept and slope. No standard errors provided by this algorithm.  
-mc.paba <- function(angM, X, Y, alpha=0.05, posCor=TRUE, calcCI=TRUE) 
+mc.paba <- function(angM, X, Y, alpha=0.05, posCor=TRUE, calcCI=TRUE, slope.measure=c("radian","tangent")) 
 {
 	## Check validity of parameters
     stopifnot(nrow(angM)==ncol(angM))
@@ -155,7 +158,10 @@ mc.paba <- function(angM, X, Y, alpha=0.05, posCor=TRUE, calcCI=TRUE)
             sortedM <- sort(angM) # complete sorting
 		else 
             sortedM <- sort(angM,partial=half+0L:1L) # only partial sorting
-		slope <- mean(sortedM[half+0L:1L])
+        
+        
+        if(slope.measure=="radian") slope <- mean(sortedM[half+0L:1L])
+        else slope <- atan(mean(tan(sortedM[half+0L:1L]))) # slope.measure = tangent
 	}
 	mcres.slope <- tan(slope)
 	
@@ -181,8 +187,11 @@ mc.paba <- function(angM, X, Y, alpha=0.05, posCor=TRUE, calcCI=TRUE)
 			half <- (nInd+1L)%/%2L
 			if(nInd%%2L == 1L) 
                 slope <- sortedM[half]
-			else 
-                slope <- mean(sortedM[half+0L:1L])
+			else {
+                if(slope.measure=="radian") slope <- mean(sortedM[half+0L:1L])
+                else slope <- atan(mean(tan(sortedM[half+0L:1L]))) # slope.measure = tangent
+            }
+                
 			mcres.slopeL = tan(slope)
 		}
 		## Upper CI	
@@ -194,9 +203,11 @@ mc.paba <- function(angM, X, Y, alpha=0.05, posCor=TRUE, calcCI=TRUE)
 			half <- (nInd+1L)%/%2L
 			if(nInd%%2L == 1L) 
                 slope <- sortedM[half]
-			else 
-                slope <- mean(sortedM[half+0L:1L])
-			mcres.slopeU = tan(slope)
+            else {
+                if(slope.measure=="radian") slope <- mean(sortedM[half+0L:1L])
+                else slope <- atan(mean(tan(sortedM[half+0L:1L]))) # slope.measure = tangent
+            }
+            mcres.slopeU = tan(slope)
 		}
 	}
 	else 
