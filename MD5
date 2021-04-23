@@ -1,5 +1,5 @@
-1ca663c14b5e0e156d3f76c29c45406d *DESCRIPTION
-b3651582396931800bb05eeaef348127 *NAMESPACE
+ccb98f826f84b08265fd8c4ced145e08 *DESCRIPTION
+22352aa06aa97d843626a4841b819a24 *NAMESPACE
 445607876674fe9a899d85c8dcc105d5 *R/MCResult.r
 0c92155e066297aaa48030ed17c95772 *R/MCResultAnalytical.r
 d6aed5de50ee28396d778396405b8045 *R/MCResultAnalyticalMethods.r
@@ -89,7 +89,7 @@ dcb33cddd6b83dda082ba9d1e6817688 *man/MCResultResampling.plotBootstrapT.Rd
 df024e79f12a6e675c751e86aa2ed2ed *man/MCResultResampling.printSummary.Rd
 918b9e8837b60f67d28054b9101b6667 *man/calcDiff.Rd
 dea6e52cfc0abc1c1c115f64f4c8903c *man/compareFit.Rd
-c50b5b8bb7ec4bec71644ae65338fd1e *man/creatinine.Rd
+5b6dd7396bbaca87bbfec9aa8169c48a *man/creatinine.Rd
 65d9f7ceb53b712ddd0f2fe111999636 *man/includeLegend.Rd
 68278e22a4dd1d8371fcfffbf90bdf3d *man/mc.analytical.ci.Rd
 29d2a302b27c4e36e748f97fc9466e3e *man/mc.bootstrap.Rd
@@ -109,7 +109,7 @@ ce40592399407e1cf04d663de16d4809 *man/mc.make.CIframe.Rd
 4d8408a12d6f33e9c2a2bc8b3e3c6ec5 *man/mc.paba.Rd
 58ca77902065dcd9b03b4574e489d7e6 *man/mc.wdemingConstCV.Rd
 8eb9eb0bd7c34d67474e1d5dadc93c94 *man/mc.wlinreg.Rd
-215ecb33b21c7ac753f1bcccf5090c43 *man/mcr-package.Rd
+1992bd775822131c39b859a9e1562946 *man/mcr-package.Rd
 d45e24dffb0e6aba7eebc896a92b8a79 *man/mcreg.Rd
 03b499af4ba1d8f277fa50d235cfd0a3 *man/newMCResult.Rd
 6efdbecc54d2a7010d231ddc254d9c76 *man/newMCResultAnalytical.Rd
@@ -117,3 +117,4 @@ d45e24dffb0e6aba7eebc896a92b8a79 *man/mcreg.Rd
 7d96c5181c8be8f028c5f2b69ca41785 *man/newMCResultJackknife.Rd
 69e79839c99bd36d409aaac3d39ac490 *man/newMCResultResampling.Rd
 66df7fb4b84bf0afd9ff6dd3e874950b *src/PaBaAlgorithm.c
+2da9da05c100cd993b2145ed301e01e0 *src/init.c

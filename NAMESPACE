@@ -2,7 +2,13 @@ useDynLib(mcr, .registration=TRUE)
 
 ### imported generics and functions
 import(methods)
-importFrom("graphics","plot")
+importFrom("grDevices", "rgb")
+importFrom("graphics", "abline", "arrows", "box", "grid", "hist",
+             "layout", "legend", "mtext", "par", "points", "polygon",
+             "segments", "text", "title","plot")
+importFrom("stats", "complete.cases", "cor", "cor.test", "density",
+             "dt", "median", "pnorm", "qnorm", "qqplot", "qt",
+             "quantile", "rt", "sd")
 
 ### Generics and functions defined in this package
 export(
