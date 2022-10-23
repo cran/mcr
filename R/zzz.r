@@ -22,5 +22,5 @@
 ###############################################################################
 
 .onLoad <- function(lib,pkg) {
-    library.dynam("mcr", pkg, lib)
+    if(as.numeric(R.Version()$major) < 4) library.dynam("mcr", pkg, lib)
 }

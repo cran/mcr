@@ -73,11 +73,16 @@
 #'              Carpenter, J., Bithell, J. (2000)
 #'              Bootstrap confidence intervals: when, which, what? A practical guide for medical statisticians.
 #'              \emph{Stat Med}, \bold{19 (9)}, 1141--1164.
-#' @author Ekaterina Manuilova \email{ekaterina.manuilova@@roche.com}, Fabian Model \email{fabian.model@@roche.com}
+#' @author Ekaterina Manuilova \email{ekaterina.manuilova@@roche.com}, Fabian Model \email{fabian.model@@roche.com}, Sergej Potapov \email{sergej.potapov@@roche.com}
 
-mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaBa", "PaBaLarge"), X, Y, error.ratio,
-                         nsamples=1000, jackknife=TRUE, bootstrap=c("none","bootstrap", "nestedbootstrap"),
-                         nnested=25, iter.max=30, threshold=0.00000001, NBins=1000000, slope.measure=c("radian","tangent")) 
+
+
+
+
+mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaBa", "PaBaLarge","TS","PBequi"),
+						jackknife=TRUE, bootstrap=c("none","bootstrap", "nestedbootstrap"),
+						X, Y, error.ratio, nsamples=1000,
+                        nnested=25, iter.max=30, threshold=0.00000001, NBins=1000000, slope.measure=c("radian","tangent")) 
 {
 	method.reg <- match.arg(method.reg)
 	bootstrap <- match.arg(bootstrap)
@@ -140,253 +145,274 @@ mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaB
 	npoints <- length(X)
 
 	# Choice of arguments for regfun
-	if(method.reg == "LinReg")
-    {
-		callfun.reg <- function(idx)
-        {
-            if(sd(X[idx])<=0)
-            {
+	if(method.reg == "LinReg"){
+		callfun.reg <- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if(sd(X[idx]) <= 0){
                 ## All identical points, no estimation possible
                 warning("Resampling LinReg regression: all x coordinates in subsample identical - regression coefficients undetermined!")
-                return(list(b0=as.numeric(NA),b1=as.numeric(NA),se.b0=as.numeric(NA),se.b1=as.numeric(NA),xw=as.numeric(NA)))
+                list(b0=as.numeric(NA), b1=as.numeric(NA), 
+								se.b0=as.numeric(NA), se.b1=as.numeric(NA), 
+								xw=as.numeric(NA))
             }
-            return(mc.linreg(X[idx],Y[idx]))
+            mc.linreg(X[idx], Y[idx])
         }
-    }
-	else if(method.reg == "WLinReg")
-    {
-		callfun.reg <- function(idx)
-        {
-            if(sd(X[idx])<=0)
-            {
+    }else if(method.reg == "WLinReg"){
+		callfun.reg <- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if(sd(X[idx]) <= 0){
                 ## All identical points, no estimation possible
                 warning("Resampling WLinReg regression: all x coordinates in subsample identical - regression coefficients undetermined!")
-                return(list(b0=as.numeric(NA),b1=as.numeric(NA),se.b0=as.numeric(NA),se.b1=as.numeric(NA),xw=as.numeric(NA)))
+                list(b0=as.numeric(NA), b1=as.numeric(NA),
+								se.b0=as.numeric(NA), se.b1=as.numeric(NA),
+								xw=as.numeric(NA))
             }
-            return(mc.wlinreg(X[idx],Y[idx]))
+            mc.wlinreg(X[idx], Y[idx])
         }
-    }
-	else if(method.reg == "Deming")
-    {
-		callfun.reg <- function(idx)
-        {
-            if(sd(X[idx])<=0)
-            {
+    }else if(method.reg == "PBequi"){
+		callfun.reg <- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if(sd(X[idx]) <= 0){
+                ## All identical points, no estimation possible
+                warning("Resampling equivariant PaBa regression: all x coordinates in subsample identical - regression coefficients undetermined!")
+                list(b0=as.numeric(NA), b1=as.numeric(NA),
+								se.b0=as.numeric(NA), se.b1=as.numeric(NA),
+								xw=as.numeric(NA))
+            }
+            mc.PBequi(X[idx], Y[idx],method.reg="PBequi",slope.measure=slope.measure,calcCI=TRUE)
+        }
+    }else if(method.reg == "TS"){
+		callfun.reg <- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if(sd(X[idx]) <= 0){
+                ## All identical points, no estimation possible
+                warning("Resampling Theil-Sen regression: all x coordinates in subsample identical - regression coefficients undetermined!")
+                list(b0=as.numeric(NA), b1=as.numeric(NA),
+								se.b0=as.numeric(NA), se.b1=as.numeric(NA),
+								xw=as.numeric(NA))
+            }
+            mc.PBequi(X[idx], Y[idx],method.reg="TS",slope.measure=slope.measure,calcCI=TRUE)
+        }
+    }else if(method.reg == "Deming"){
+		callfun.reg <- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if(sd(X[idx]) <= 0){
                 ## All identical points, no estimation possible
                 warning("Resampling Deming regression: all x coordinates in subsample identical - regression coefficients undetermined!")
-                return(list(b0=as.numeric(NA),b1=as.numeric(NA),se.b0=as.numeric(NA),se.b1=as.numeric(NA),xw=as.numeric(NA)))
+                list(b0=as.numeric(NA),b1=as.numeric(NA),se.b0=as.numeric(NA),se.b1=as.numeric(NA),xw=as.numeric(NA))
             }
-            return(mc.deming(X[idx],Y[idx],error.ratio=error.ratio))
+            mc.deming(X[idx], Y[idx], error.ratio=error.ratio)
         }
-    }
-	else if(method.reg == "WDeming")
-    {
-		callfun.reg <- function(idx)
-        {
-            if(sd(X[idx])<=0)
-            {
+    }else if(method.reg == "WDeming"){
+		callfun.reg <- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if(sd(X[idx]) <= 0){
                 ## All identical points, no estimation possible
                 warning("Resampling WDeming regression: all x coordinates in subsample identical - regression coefficients undetermined!")
-                return(list(b0=as.numeric(NA),b1=as.numeric(NA),iter=0,xw=as.numeric(NA)))
+                list(b0=as.numeric(NA), b1=as.numeric(NA), iter=0, xw=as.numeric(NA))
             }
-        	return(mc.wdemingConstCV(X[idx],Y[idx],error.ratio=error.ratio,iter.max=iter.max,threshold=threshold))
+        	mc.wdemingConstCV(X[idx], Y[idx], error.ratio=error.ratio, 
+										iter.max=iter.max, threshold=threshold)
         }
-    }
-    else if(method.reg == "PaBaLarge")
-    {
-        callfun.reg <- function(idx)
-        {
-            if((sd(X[idx])<=0)|(sd(Y[idx])<=0))
-            {
+    }else if(method.reg == "PaBaLarge"){
+        callfun.reg <- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if((sd(X[idx]) <= 0) | (sd(Y[idx]) <= 0)){
                 ## All identical points on one axis, no estimation possible
                 warning("Resampling PaBaLarge regression: x or y coordinates of all data points in subsample identical - regression coefficients undetermined!")
-                return(list(b0=as.numeric(NA),b1=as.numeric(NA),xw=as.numeric(NA)))
+                list(b0=as.numeric(NA), b1=as.numeric(NA), xw=as.numeric(NA))
             }
             paba.posCor <- cor(X[idx], Y[idx], method="kendall") >= 0
-            tmpRes <- mc.paba.LargeData(X[idx], Y[idx], NBins=NBins, posCor=paba.posCor)
-            return( list( b0=tmpRes["Intercept", "EST"], b1=tmpRes["Slope", "EST"], xw=as.numeric(NA) ) )
+            tmpRes <- mc.paba.LargeData(X[idx], Y[idx], NBins=NBins, posCor=paba.posCor, slope.measure=slope.measure)
+            list( b0=tmpRes["Intercept", "EST"], b1=tmpRes["Slope", "EST"], xw=as.numeric(NA) )
         }
-    }
-	else if(method.reg == "PaBa") 
-    {
+    }else if(method.reg == "PaBa"){
         ## For slope matrix determine if slope 1 or -1 is expected based on full data set
-        paba.posCor.global <- cor(X,Y,method="kendall") >= 0
+        paba.posCor.global <- cor(X, Y, method="kendall") >= 0
 		## Compute slope matrix once for all further computations,
         ## global estimation of posCor means global +/-Inf assignment - needs to be corrected if correlation changes due to resampling
-        paba.angM.global <- mc.calcAngleMat(X,Y,posCor=paba.posCor.global)
-        ## Regression function
-        callfun.reg<- function(idx)
-        {
-            if((sd(X[idx])<=0)|(sd(Y[idx])<=0))
-            {
+
+		## Regression function
+        callfun.reg<- function(idx, X, Y, error.ratio, iter.max, NBins, slope.measure){
+            if((sd(X[idx]) <= 0) | (sd(Y[idx]) <= 0)){
                 ## All identical points on one axis, no estimation possible
                 warning("Resampling PaBa regression: x or y coordinates of all data points in subsample identical - regression coefficients undetermined!")
-                return(list(b0=as.numeric(NA),b1=as.numeric(NA),xw=as.numeric(NA)))
+                return(list(b0=as.numeric(NA), b1=as.numeric(NA), xw=as.numeric(NA)))
             }
-
             ## For actual regression determine if slope 1 or -1 is expected based on resampled data set!
-            paba.posCor <- cor(X[idx],Y[idx],method="kendall") >= 0
+            paba.posCor <- cor(X[idx], Y[idx], method="kendall") >= 0
             ## Run Passing-Bablok
-		  	if(paba.posCor.global==paba.posCor)
-            {
-                ## Correlation sign did not change by resampling - use resampled angle matrix
-                mc.res <- mc.paba(paba.angM.global[idx,idx],X[idx],Y[idx],posCor=paba.posCor,calcCI=FALSE,slope.measure=slope.measure)
-            } else {
-                ## Correlation sign did change by resampling - re-calculate angle matrix
-                paba.angM.rec <- mc.calcAngleMat(X[idx],Y[idx],posCor=paba.posCor)
-                mc.res <- mc.paba(paba.angM.rec,X[idx],Y[idx],posCor=paba.posCor,calcCI=FALSE,slope.measure=slope.measure)
-                rm(paba.angM.rec)
-            }
-			return(list(b0=mc.res["Intercept","EST"],b1=mc.res["Slope","EST"],xw=as.numeric(NA)))
+            mc.res <- mc.paba(angM = NULL, X[idx], Y[idx],
+									posCor=paba.posCor, calcCI=FALSE, 
+									slope.measure=slope.measure)
+			list(b0=mc.res["Intercept","EST"], b1=mc.res["Slope","EST"], xw=as.numeric(NA))
         }
-    }
-	else stop("Unknown regression function!")
+    }else stop("Unknown regression function!")
 
 	# Calculation of regression parameters for whole data set (global coefficients)
-	d <- callfun.reg(1:npoints)
+	d <- callfun.reg(1:npoints, X, Y, error.ratio, iter.max, NBins, slope.measure)
 	glob.b0 <- d$b0
 	glob.b1 <- d$b1
 	xmean <- d$xw
-	if (method.reg %in% c("PaBa", "PaBaLarge"))
-    { 
+	if (method.reg %in% c("PaBa", "PaBaLarge")){ 
         weight <- rep(1, npoints) 
-    } 
-    else 
-    {  
+    }else{  
         weight <- d$weight
     } 
-	if(method.reg %in% c("WDeming","PaBa", "PaBaLarge")) 
-    {
+	if(method.reg %in% c("WDeming","PaBa", "PaBaLarge")){
 		## Analytical standard errors not available for weighted Deming and Passing-Bablok
 		glob.seb0 <- as.numeric(NA)
 		glob.seb1 <- as.numeric(NA)
-	} 
-    else 
-    {
+	}else{
 		glob.seb0 <- d$se.b0
 		glob.seb1 <- d$se.b1
 	}
     rm(d)
-
-  # ----------------------------------------------------------------------------
-
+	
+	
+	
+  	# ----------------------------------------------------------------------------
 	## Calculation of jackknife coefficients
-	
-	if(jackknife==TRUE) 
-    {	
-	    B0jack <- c()
-        B1jack <- c()
-                    
-    	for(i in 1:npoints) 
-        {
-            ## Draw bootstrap (jackknife)sample
-    		index <- (1:npoints)[-i]
-    		## Regression
-    		d<-callfun.reg(index)
-    		B0jack[i] <- d$b0
-    		B1jack[i] <- d$b1
-    	} # end jackknife
-    
-   	    if(method.reg == "WDeming") 
-        {		
+	cal.parallel <- options()$parallel
+	cores.parallel <- options()$cores
+	if(jackknife == TRUE){
+		if(is.null(cal.parallel) || !cal.parallel){
+	     	results <- lapply(as.list(1:npoints), 
+								function(z){
+									d <- callfun.reg((1:length(X))[-z], X, Y, error.ratio, iter.max, NBins, slope.measure)
+									d[c("b0", "b1")]
+								})
+		}else{
+			if(is.null(cores.parallel)){
+				cl <- makeCluster(detectCores()/2)
+			}else{
+				cl <- makeCluster(cores.parallel)
+			}
+			out <- clusterEvalQ(cl, library(mcr))
+			clusterExport(cl, 
+						varlist = c("callfun.reg", "X", "Y", "error.ratio", "iter.max", "NBins", "slope.measure"),
+						envir = environment())
+
+			results <- clusterApplyLB(cl, as.list(1:npoints), 
+								function(z){
+									d <- callfun.reg((1:length(X))[-z], X, Y, error.ratio, iter.max, NBins, slope.measure)
+									d[c("b0", "b1")]
+								})
+			stopCluster(cl)
+		}
+		B0jack <- sapply(results, function(x) x$b0)
+		B1jack <- sapply(results, function(x) x$b1)
+    	
+   	    if(method.reg == "WDeming"){		
             ## Use Linnet's algorithm to estimate parameter SEs	
-            jackLinnetB0 <- mc.calcLinnetCI(B0jack,glob.b0,0.05)
-            jackLinnetB1 <- mc.calcLinnetCI(B1jack,glob.b1,0.05)
-            glob.seb0<-jackLinnetB0$se
-            glob.seb1<-jackLinnetB1$se
+            jackLinnetB0 <- mc.calcLinnetCI(B0jack, glob.b0, 0.05)
+            jackLinnetB1 <- mc.calcLinnetCI(B1jack, glob.b1, 0.05)
+            glob.seb0 <- jackLinnetB0$se
+            glob.seb1 <- jackLinnetB1$se
         }
 	
-	    if(bootstrap=="none") 
-        {
-	        return(list(glob.coef=c(glob.b0,glob.b1),glob.sigma=c(glob.seb0,glob.seb1),xmean=xmean,
-        	            B0jack=B0jack, B1jack=B1jack,npoints=npoints,cimeth="jackknife", weight=weight))
+	    if(bootstrap == "none"){
+	        return(list(glob.coef = c(glob.b0,glob.b1),
+						glob.sigma = c(glob.seb0,glob.seb1),
+						xmean = xmean,
+        	            B0jack = B0jack, B1jack = B1jack,
+						npoints = npoints, cimeth = "jackknife", 
+						weight = weight))
         }
-    } # end jackknife==TRUE
+    }
 	
 	#-----------------------------------------------------------------------------
 	
-	if(bootstrap %in% c("bootstrap", "nestedbootstrap")) 
-    {
+	if(bootstrap %in% c("bootstrap", "nestedbootstrap")){
         ##
 	    ## Confidence intervals with Bootstrap or nested Bootstrap
        	##
-        
-        ## Vectors to save parameter estimations of b0 and b1 for each bootstrap sample
-    	B0 <- B1 <- c()
-    	sigmaB0 <- sigmaB1 <- c()
-    	MX <- c()
-    
     	## Bootstrap
-    	for(i in 1:nsamples) 
-        {
-            ## Draw bootstrap sample
-    		index <- sample(1:npoints,size=npoints,replace=TRUE)
-    
-    		## Regression on bootstrap sample
-    		d <- callfun.reg(index)
-    		## Parameter point estimates
-    		B0[i] <- d$b0
-    		B1[i] <- d$b1
-    			
-    		if(method.reg != "PaBa") 
-              MX[i] <- d$xw
-            else
-                MX[i] <- mean(X[index])
-    			
-    		## Parameter SE estimation
-    		if(bootstrap == "nestedbootstrap")      # Use nested bootstrap, works for all regression methods
-            { 
-    			B0n <- c()
-    			B1n <- c()
-    
-    			## Bootstrap
-    			for(ii in 1:nnested) 
-                {
-    			    ## Draw nested bootstrap sample
-    				nindex <- sample(1:npoints,size=npoints,replace=TRUE)
-    				## Regression on nested bootstrap sample
-    				d <- callfun.reg(index[nindex])
-    					B0n[ii] <- d$b0
-    					B1n[ii] <- d$b1
-    			} #end nest
-    
-                ## Estimate SD from nested bootstrap results
-                sigmaB0[i] <- sd(B0n,na.rm=T)
-                sigmaB1[i] <- sd(B1n,na.rm=T)
-            }
-            else        # Use analytical SD estimates
-            { 
-                if(method.reg %in% c("LinReg","WLinReg","Deming")) 
-                {
-                    sigmaB0[i] <- d$se.b0
-                    sigmaB1[i] <- d$se.b1
-                }
-                else if(method.reg == "WDeming") 
-                {
-                    ## Use global SE estimates according to Linnet's method
-                    sigmaB0[i] <- glob.seb0
-                    sigmaB1[i] <- glob.seb1
-                }
-                else 
-                    sigmaB0[i] <- sigmaB1[i] <- as.numeric(NA) # No analytical SE estimates available
-            }
-        } # end of bootstrap loop
+		calc.bootstrap <- function(j, callfun.reg, method.reg, X, Y, error.ratio, iter.max, NBins, slope.measure, npoints, nnested, bootstrap){
 
+			## Draw bootstrap sample
+			index <- sample(1:npoints, size=npoints, replace=TRUE)
+			
+			## Regression on bootstrap sample
+			d <- callfun.reg(index, X, Y, error.ratio, iter.max, NBins, slope.measure)
+			
+			if(method.reg != "PaBa"){ 
+				MX <- d$xw
+			}else{
+				MX <- mean(X[index])
+			}
+			
+			## Parameter SE estimation
+			if(bootstrap == "nestedbootstrap"){      # Use nested bootstrap, works for all regression methods
+				B0n <- B1n <- vector("numeric", length = nnested)
+				
+				## Bootstrap
+				for(ii in 1:nnested){
+					## Draw nested bootstrap sample
+					nindex <- sample(1:npoints,size=npoints,replace=TRUE)
+					## Regression on nested bootstrap sample
+					d.nest <- callfun.reg(index[nindex], X, Y, error.ratio, iter.max, NBins, slope.measure)
+					B0n[ii] <- d.nest$b0
+					B1n[ii] <- d.nest$b1
+				} #end nest
+				
+				## Estimate SD from nested bootstrap results
+				sigmaB0 <- sd(B0n, na.rm=TRUE)
+				sigmaB1 <- sd(B1n, na.rm=TRUE)
+			}else{
+				# Use analytical SD estimates
+				if(method.reg %in% c("LinReg", "WLinReg", "Deming","TS","PBequi")){
+					sigmaB0 <- d$se.b0
+					sigmaB1 <- d$se.b1
+				}else if(method.reg == "WDeming"){
+					## Use global SE estimates according to Linnet's method
+					sigmaB0 <- glob.seb0
+					sigmaB1 <- glob.seb1
+				}else{
+					sigmaB0 <- sigmaB1 <- as.numeric(NA) # No analytical SE estimates available
+				}
+			}
+			list(B0 = d$b0, B1 = d$b1, MX = MX, sigmaB0 = sigmaB0, sigmaB1 = sigmaB1)
+		} # end of bootstrap loop
+			
+		
+		
+		if(is.null(cal.parallel) || !cal.parallel){		
+			results <- lapply(as.list(1:nsamples), 
+								calc.bootstrap, callfun.reg, method.reg, X, Y, 
+								error.ratio, iter.max, NBins, slope.measure, 
+								npoints, nnested, bootstrap)
+		}else{
+			if(is.null(cores.parallel)){
+				cl <- makeCluster(detectCores()/2)
+			}else{
+				cl <- makeCluster(cores.parallel)
+			}
+			out <- clusterEvalQ(cl, library(mcr))
+			clusterExport(cl, 
+					varlist = c("calc.bootstrap","callfun.reg", "method.reg", "X", "Y", 
+								"error.ratio", "iter.max", "NBins", "slope.measure", 
+								"npoints", "nnested", "mc.deming", "bootstrap"),
+					envir = environment())
+			out <- clusterSetRNGStream(cl)
+			results <- clusterApplyLB(cl, as.list(1:nsamples),
+									calc.bootstrap, callfun.reg, method.reg, X, Y, error.ratio, 
+									iter.max, NBins, slope.measure, npoints, nnested, bootstrap)
+			stopCluster(cl)
+		}
+		B0 <- sapply(results, function(x) x$B0)
+		B1 <- sapply(results, function(x) x$B1)
+		MX <- sapply(results, function(x) x$MX)
+		sigmaB0 <- sapply(results, function(x) x$sigmaB0)
+		sigmaB1 <- sapply(results, function(x) x$sigmaB1)
+		
+		
         ## Check whether there were any invalid regressions due to drawing all identical samples
-        na.mask <- !(is.na(B0)|is.na(B1))
+        na.mask <- !(is.na(B0) | is.na(B1))
+		
         ## If more than 5% of bootstrap runs had invalid regressions => Error
-        if(sum(!na.mask)/length(na.mask)>0.05) stop("There were too many resamples with undetermined regression coefficients!")
+        if(sum(!na.mask)/length(na.mask) > 0.05) stop("There were too many resamples with undetermined regression coefficients!")
         
-    	if (jackknife == FALSE) 
-        {
+    	if (!jackknife){
             ## Return non-NA bootstrap results
             return(list(glob.coef=c(glob.b0,glob.b1), glob.sigma=c(glob.seb0, glob.seb1), xmean=xmean,
     	                B0=B0[na.mask], B1=B1[na.mask], MX=MX[na.mask], sigmaB0=sigmaB0[na.mask], sigmaB1=sigmaB1[na.mask],
     	                nsamples=sum(na.mask), nnested=nnested, npoints=npoints, cimeth=bootstrap, weight=weight))
-        } 
-        else 
-        {
-            if(any(is.na(B0jack)|is.na(B1jack))) stop("Too many identical data points!")
+        }else{
+            if(any(is.na(B0jack) | is.na(B1jack))) stop("Too many identical data points!")
             ## Return non-NA bootstrap results
             return(list(glob.coef=c(glob.b0, glob.b1), glob.sigma=c(glob.seb0, glob.seb1), xmean=xmean,
                         B0jack=B0jack, B1jack=B1jack, B0=B0[na.mask], B1=B1[na.mask], MX=MX[na.mask], sigmaB0=sigmaB0[na.mask], sigmaB1=sigmaB1[na.mask],
@@ -394,4 +420,10 @@ mc.bootstrap <- function(method.reg=c("LinReg","WLinReg","Deming","WDeming","PaB
         }
     }  # end of bootstrap
 } # end of mc.bootstrap
+
+
+
+
+
+
 

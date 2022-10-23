@@ -135,5 +135,61 @@
 				<Slope>0.991592719686709</Slope>
 				<SlopeL>0.88402817327764</SlopeL>
 				<SlopeU>1.12373138870351</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>PBequi-small</Name>
+			<Parameter>
+				<RegMethod>PBequi</RegMethod>
+				<CIMethod>analytical</CIMethod>
+				<methodlarge>FALSE</methodlarge>
+			</Parameter>
+			<ReferenceResults>
+				<Intercept>-2.44854969408334e-07</Intercept>
+				<InterceptL>-2.80775546346159e-06</InterceptL>
+				<InterceptU>2.31804552464493e-06</InterceptU>
+				<Slope>0.991592719686709</Slope>
+				<SlopeL>0.874504920068688</SlopeL>
+                <SlopeU>1.10868051930473</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>PBequi-large</Name>
+			<Parameter>
+				<RegMethod>PBequi</RegMethod>
+				<CIMethod>analytical</CIMethod>
+				<methodlarge>TRUE</methodlarge>
+			</Parameter>
+			<ReferenceResults>
+				<Intercept>-2.44854969408334E-07</Intercept>
+				<InterceptL>-2.80797920927967e-06</InterceptL>
+				<InterceptU>2.318269270463e-06</InterceptU>
+				<Slope>0.991592719686709</Slope>
+				<SlopeL>0.874488352226766</SlopeL>
+                <SlopeU>1.10869708714665</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>Teil-Sen-small</Name>
+			<Parameter>
+				<RegMethod>TS</RegMethod>
+				<CIMethod>analytical</CIMethod>
+                <methodlarge>FALSE</methodlarge>
+			</Parameter>
+			<ReferenceResults>
+				<Intercept>6.2991395442635e-07</Intercept>
+				<InterceptL>-1.36666685822969e-06</InterceptL>
+				<InterceptU>2.62649476708239e-06</InterceptU>
+				<Slope>0.936547814163375</Slope>
+				<SlopeL>0.837020929701995</SlopeL>
+                <SlopeU>1.03607469862476</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>Teil-Sen-large</Name>
+        <Parameter>
+            <RegMethod>TS</RegMethod>
+            <CIMethod>analytical</CIMethod>
+            <methodlarge>TRUE</methodlarge>
+        </Parameter>
+        <ReferenceResults>
+            <Intercept>6.2991395442635e-07</Intercept>
+            <InterceptL>-1.35350253279252e-06</InterceptL>
+            <InterceptU>2.61333044164522e-06</InterceptU>
+            <Slope>0.936547814163375</Slope>
+            <SlopeL>0.837569720037925</SlopeL>
+            <SlopeU>1.03552590828883</SlopeU></ReferenceResults></Algorithm>
 		</TestAlgorithms></RDx_TestCase_MethodComparison>
 		

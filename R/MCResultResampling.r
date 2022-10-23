@@ -92,3 +92,7 @@ setMethod("calcResponse",signature=c(.Object="MCResultResampling"),definition=MC
 
 setMethod(f="printSummary",signature=c(.Object="MCResultResampling"),definition=MCResultResampling.printSummary)
 
+setMethod("summary", signature = c(object="MCResultResampling"), 
+			definition = function(object, ...){
+					MCResultResampling.printSummary(object)
+					})

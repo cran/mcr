@@ -22,6 +22,9 @@
 #' @param alpha     (numeric) value specifying the 100(1-alpha)\% confidence level for confidence intervals
 #' @param posCor    (logical) should algorithm assume positive correlation, i.e. symmetry around slope 1?
 #' @param calcCI    (logical) should confidence intervals be computed?
+#' @param slope.measure angular measure of pairwise slopes  (see \code{\link{mcreg}} for details).\cr   
+#'          \code{"radian"} - for data sets with even sample numbers median slope is calculated as average of two central slope angles.\cr
+#'          \code{"tangent"} - for data sets with even sample numbers median slope is calculated as average of two central slopes (tan(angle)).\cr
 #' 
 #' @return Matrix of estimates and confidence intervals for intercept and slope. No standard errors provided by this algorithm. 
 #' 
@@ -45,7 +48,7 @@
 #' getCoefficients(res1)-getCoefficients(res2)
 
 
-mc.paba.LargeData <- function(X, Y, NBins=1e06, alpha=0.05, posCor=TRUE, calcCI=TRUE) 
+mc.paba.LargeData <- function(X, Y, NBins=1e06, alpha=0.05, posCor=TRUE, calcCI=TRUE, slope.measure=c("radian","tangent")) 
 {
     NBinsUpperBound <- 1e08                     # NBins may not be larger than that
     
@@ -78,7 +81,8 @@ mc.paba.LargeData <- function(X, Y, NBins=1e06, alpha=0.05, posCor=TRUE, calcCI=
                 pX=as.double(X), pY=as.double(Y), pNData=as.integer(length(X)),                                     # input
                 pPosCor=as.integer(posCor), pNBins=as.integer(NBins),
                 pSlope=double(1), pQuantile=as.double(qnorm(1-alpha/2)),                                            # output
-                pSlopeLower=as.double(-INF), pSlopeUpper=as.double(INF), pCIundefined=as.integer(0))
+                pSlopeLower=as.double(-INF), pSlopeUpper=as.double(INF), pCIundefined=as.integer(0),
+				tangent=as.integer(slope.measure == "tangent"), PACKAGE="mcr")
 
     mcres.slope <- res$pSlope  
 

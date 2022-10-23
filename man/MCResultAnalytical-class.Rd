@@ -4,6 +4,7 @@
 \alias{MCResultAnalytical-class}
 \alias{calcResponse,MCResultAnalytical-method}
 \alias{printSummary,MCResultAnalytical-method}
+\alias{summary,MCResultAnalytical-method}
 
 \title{Class \code{"MCResultAnalytical"}}
 \description{
@@ -33,12 +34,14 @@ Class \code{"\linkS4class{MCResult}"}, directly.
   \describe{
     \item{calcResponse}{\code{signature(.Object = "MCResultAnalytical")}: ... }
     \item{printSummary}{\code{signature(.Object = "MCResultAnalytical")}: ... }
+	\item{summary}{\code{signature(.Object = "MCResultAnalytical")}: ... }
 	 }
 }
 \author{
 Ekaterina Manuilova \email{ekaterina.manuilova@roche.com}, 
 Andre Schuetzenmeister \email{andre.schuetzenmeister@roche.com}, 
-Fabian Model \email{fabian.model@roche.com}
+Fabian Model \email{fabian.model@roche.com},
+Sergej Potapov \email{sergej.potapov@roche.com}
 }
 \examples{
 showClass("MCResultAnalytical")

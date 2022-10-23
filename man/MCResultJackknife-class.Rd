@@ -6,6 +6,7 @@
 \alias{getRJIF,MCResultJackknife-method}
 \alias{plotwithRJIF,MCResultJackknife-method}
 \alias{printSummary,MCResultJackknife-method}
+\alias{summary,MCResultJackknife-method}
 
 \title{Class \code{"MCResultJackknife"}}
 \description{
@@ -40,12 +41,14 @@ Class \code{"\linkS4class{MCResult}"}, directly.
     \item{getRJIF}{\code{signature(.Object = "MCResultJackknife")}: ... }
     \item{plotwithRJIF}{\code{signature(.Object = "MCResultJackknife")}: ... }
     \item{printSummary}{\code{signature(.Object = "MCResultJackknife")}: ... }
+	\item{summary}{\code{signature(.Object = "MCResultJackknife")}: ... }
 	 }
 }
 \author{
 Ekaterina Manuilova \email{ekaterina.manuilova@roche.com}, 
 Andre Schuetzenmeister \email{andre.schuetzenmeister@roche.com}, 
-Fabian Model \email{fabian.model@roche.com}
+Fabian Model \email{fabian.model@roche.com},
+Sergej Potapov \email{sergej.potapov@roche.com}
 }
 \keyword{classes}
 \examples{

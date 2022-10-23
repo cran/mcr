@@ -42,10 +42,10 @@ setClass(
         mnames = "character",
 
         ## Used regression method
-        ## "LinReg","QWLinreg","Deming","PaBa"
+        ## "LinReg","QWLinreg","Deming","PaBa","PBequi"
         regmeth = "character",
 
-        ## Used methid for CI-calculation
+        ## Used method for CI-calculation
         ## "analytical", "jackknife","bootstrap","nested bootstrap"
         cimeth = "character",
   	
@@ -69,6 +69,13 @@ setMethod(f="initialize",signature="MCResult",definition=MCResult.initialize)
 
 setGeneric("getCoefficients",function(.Object,...){standardGeneric("getCoefficients")})
 setMethod("getCoefficients",signature=c(.Object="MCResult"),definition=MCResult.getCoefficients)
+
+
+setMethod("coef", signature = c(object="MCResult"), 
+			definition = function(object, ...){
+					MCResult.getCoefficients(object)
+					})
+
 
 setGeneric("getData",function(.Object,...){standardGeneric("getData")})
 setMethod("getData",signature=c(.Object="MCResult"),definition=MCResult.getData)
@@ -107,6 +114,12 @@ setMethod("plotBias",signature=c(x="MCResult"),definition=MCResult.plotBias)
 
 setGeneric("printSummary",function(.Object,...){standardGeneric("printSummary")})
 setMethod("printSummary",signature=c(.Object="MCResult"),definition=MCResult.printSummary)
+
+setMethod("summary", signature = c(object="MCResult"), 
+			definition = function(object, ...){
+					MCResult.printSummary(object)
+					})
+
 
 setGeneric("plotResiduals",function(.Object,...){standardGeneric("plotResiduals")})
 setMethod("plotResiduals",signature=c(.Object="MCResult"),definition=MCResult.plotResiduals)

@@ -59,7 +59,7 @@
 #' confidence intervals for weighted Deming or Passing-Bablok regression. For these regression methods there are no analytical
 #' solutions for computing standard errors, which therefore have to be obtained by nested bootstrapping.
 #' 
-#' Note that estimating resampling based confidence intervals for Passing-Bablok regressions can take very long
+#' Note that estimating resampling based confidence intervals for Passing--Bablok regressions can take very long time 
 #' for larger data sets due to the high computational complexity of the algorithm. To mitigate this drawback
 #' an adaption of the Passing-Bablok algorithm has been implemented (\code{"PaBaLarge"}), which yields approximative results. This approach
 #' does not build the complete upper triangular matrix of all 'n*(n-1)/2' slopes. It subdivides the range of slopes into
@@ -73,7 +73,19 @@
 #' In this situation using an angle based metric (\code{slope.measure="radian"}) will result in
 #' a regression estimate that is geometrically centered between the two central slopes, whereas the tangent measure (\code{slope.measure="tangent"})
 #' proposed in Passing and Bablok (1983) will be geometrically biased towards a higher slope. See below for a pathological example.
-#' Note that the difference between the two measures is neglectable for data sets with reasonable sample size (N>20) and correlation.   
+#' Note that the difference between the two measures is negligible for data sets with reasonable sample size (N>20) and correlation.   
+#'
+#' Equivariant Passing-Bablok regression as proposed by Bablok et al. (1988) (see also Dufey 2020) is not bound to slopes near 1
+#' and therefore not only applicable for method comparison but also for method transformation, i.e., when two methods yield results on a different scale. 
+#' Like ordinary Passing-Bablok regression, the method is robust. 
+#' This method should be preferred over the older "PaBa" and "PaBalarge" algorithms. 
+#' Both slope measures "radian" and "tangent" are
+#' available as are methods for the determination of confidence intervals -analytical and bootstrap.
+#' By default (methodlarge=TRUE),  a modified algorithm (Dillencourt et al., 1992) is used which scales quasilinearly and requires little memory.
+#' Alternatively (methodlarge=F), a simpler implementation which scales quadratically and is more memory intensive may be called. 
+#' While point estimates coincide for both implementations, analytic confidence intervals differ slightly. 
+#' Same holds true for the Theil-Sen estimator, which is a robust alternative to linear regression.
+#' Like linear regression, it assumes that x-values are error free. 
 #'
 #'
 #' @param x measurement values of reference method, or two column matrix.
@@ -89,6 +101,8 @@
 #'          \code{"WLinReg"} - weighted ordinary least square regression.\cr
 #'          \code{"Deming"} - Deming regression.\cr 
 #'          \code{"WDeming"} - weighted Deming regression.\cr
+#'          \code{"TS"} - Theil-Sen regression.\cr
+#'          \code{"PBequi"} - equivariant Passing-Bablok regression.\cr
 #'          \code{"PaBa"} - Passing-Bablok regression.\cr  
 #'          \code{"PaBaLarge"} - approximative Passing-Bablok regression for large datasets, operating on \code{NBins} classes of constant slope angle which each slope
 #'                               is classified to instead of building the complete triangular matrix of all N*N/2 slopes.
@@ -110,6 +124,9 @@
 #' @param slope.measure angular measure of pairwise slopes used for exact PaBa regression (see below for details).\cr   
 #'          \code{"radian"} - for data sets with even sample numbers median slope is calculated as average of two central slope angles.\cr
 #'          \code{"tangent"} - for data sets with even sample numbers median slope is calculated as average of two central slopes (tan(angle)).\cr
+#' @param methodlarge  Boolean. This parameter applies only to regmethod="PBequi" and "TS".  
+#' If TRUE, a quasilinear algorithm is used. 
+#'If FALSE, a quadratic algorithm is used which is faster for less than several hundred data pairs. 
 #' @return "MCResult" object containing regression results. The function \code{\link{getCoefficients}} or
 #'          \code{\link{printSummary}} can be used to obtain or print a summary of the results.
 #'          The function \code{\link{getData}} allows to see the original data.
@@ -132,7 +149,7 @@
 #'  
 #'              Linnet, K. (1990)
 #'              Estimation of the Linear Relationship between the Measurements of two Methods with Proportional Errors.
-#'              \emph{STATISTICS IN MEDICINE}, Vol. \bold{9}, 1463--1473.
+#'              \emph{Statistics in Medicine}, Vol. \bold{9}, 1463--1473.
 #' 
 #'              Neter, J., Wassermann, W., Kunter, M. (1985)
 #'              \emph{Applied Statistical Models.} 
@@ -146,7 +163,26 @@
 #'              A new biometrical procedure for testing the equality of measurements from two different analytical methods. 
 #'              Application of linear regression procedures for method comparison studies in clinical chemistry, Part I. 
 #'              \emph{J Clin Chem Clin Biochem}.  Nov; \bold{21(11)}:709--20.
-#' 
+#'
+#'              Bablok, W., Passing, H., Bender, R., & Schneider, B. (1988)
+#'              A general regression procedure for method transformation. Application of linear regression procedures for method 
+#'              comparison studies in clinical chemistry, Part III. 
+#'              \emph{Clinical Chemistry and Laboratory Medicine}, \bold{26(11)}: 783--790.
+#'
+#'              Dillencourt, M. B., Mount, D. M., & Netanyahu, N. S. (1992) 
+#'              A randomized algorithm for slope selection. 
+#'              \emph{International Journal of Computational Geometry & Applications}, \bold{2(01)}: 1--27.
+#'
+#'              Dufey, F. (2020) 
+#'              Derivation of Passing-Bablok regression from Kendall's tau. 
+#'              \emph{The International Journal of Biostatistics}, \bold{16(2)}: 20190157. 
+#'              https://doi.org/10.1515/ijb-2019-0157
+#'
+#'              Raymaekers, J.,  Dufey, F. (2022)
+#'              Equivariant Passing-Bablok regression in quasilinear time. 
+#'              \emph{arXiv preprint arXiv:2202.08060}.
+#'              https://doi.org/10.48550/arXiv.2202.08060
+#'
 #'              Efron, B., Tibshirani, R.J. (1993)
 #'              \emph{An Introduction to the Bootstrap}. Chapman and Hall.
 #' 
@@ -156,7 +192,7 @@
 #' 
 #'              \emph{CLSI EP9-A2}. Method Comparison and Bias Estimation Using Patient Samples; Approved Guideline.
 #' @seealso \code{\link{plotDifference}}, \code{\link{plot.mcr}}, \code{\link{getResiduals}}, \code{\link{plotResiduals}}, \code{\link{calcResponse}}, \code{\link{calcBias}}, \code{\link{plotBias}}, \code{\link{compareFit}}
-#' @author Ekaterina Manuilova \email{ekaterina.manuilova@@roche.com}, Andre Schuetzenmeister \email{andre.schuetzenmeister@@roche.com}, Fabian Model \email{fabian.model@@roche.com}
+#' @author Ekaterina Manuilova \email{ekaterina.manuilova@@roche.com}, Andre Schuetzenmeister \email{andre.schuetzenmeister@@roche.com}, Fabian Model \email{fabian.model@@roche.com}, Sergej Potapov \email{sergej.potapov@@roche.com}, Florian Dufey \email{florian.dufey@@roche.com}, Jakob Raymaekers \email{jakob.raymaekers@@kuleuven.be}
 #' @examples
 #' library("mcr")
 #' data(creatinine,package="mcr")
@@ -193,15 +229,14 @@
 #' includeLegend(place="topleft",models=list(m1,m2),model.names=c("PaBa Radian","PaBa Tangent"),
 #'               colors=c("darkblue","darkgreen"),lty=c(1,2),design="1",digits=2)
 
-mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
-              mref.name = NULL,
-              mtest.name = NULL, 
-              sample.names = NULL,
-              method.reg=c("PaBa","LinReg","WLinReg","Deming","WDeming", "PaBaLarge"),
-              method.ci=c("bootstrap","jackknife","analytical","nestedbootstrap"),
-              method.bootstrap.ci=c("quantile","Student","BCa","tBoot"),
-              nsamples=999,nnested=25,rng.seed=NULL,rng.kind="Mersenne-Twister",
-              iter.max=30,threshold=0.000001,na.rm=FALSE, NBins=1000000,slope.measure=c("radian","tangent"))
+mcreg <- function(x, y = NULL, error.ratio = 1, alpha = 0.05,
+              mref.name = NULL, mtest.name = NULL, sample.names = NULL,
+              method.reg = c("PaBa", "LinReg", "WLinReg", "Deming", "WDeming", "PaBaLarge", "PBequi", "TS"),
+              method.ci = c("bootstrap", "jackknife", "analytical", "nestedbootstrap"),
+              method.bootstrap.ci = c("quantile", "Student", "BCa", "tBoot"),
+              nsamples = 999, nnested = 25, rng.seed = NULL, rng.kind = "Mersenne-Twister",
+              iter.max = 30, threshold = 0.000001, na.rm = FALSE, NBins = 1000000,
+			  slope.measure = c("radian", "tangent"),methodlarge=TRUE)
 {
 	## Match choice parameters
     method.reg <- match.arg(method.reg)
@@ -210,15 +245,13 @@ mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
     slope.measure <- match.arg(slope.measure)
   
 	## Check input data
-    if( method.reg %in% c("Deming", "WDeming") )
-    {
+    if( method.reg %in% c("Deming", "WDeming")){
         stopifnot(!is.na(error.ratio))
         stopifnot(is.numeric(error.ratio))
         stopifnot(length(error.ratio) > 0)
         stopifnot(error.ratio >= 0) 
         
-        if( method.reg == "WDeming")
-        {
+        if( method.reg == "WDeming"){
             stopifnot(!is.na(iter.max))
             stopifnot(is.numeric(iter.max))
             stopifnot(length(iter.max) > 0)
@@ -231,15 +264,13 @@ mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
         }
     }
     
-    if( method.reg %in% c("bootstrap","nestedbootstrap") )
-    {
+    if( method.ci %in% c("bootstrap","nestedbootstrap") ){
         stopifnot(!is.na(nsamples))
         stopifnot(is.numeric(nsamples))
         stopifnot(length(nsamples) > 0)
         stopifnot(nsamples > 0)
         
-        if( method.reg == "nestedbootstrap")  
-        {
+        if( method.ci == "nestedbootstrap" ){
             stopifnot(!is.na(nnested))
             stopifnot(is.numeric(nnested))
             stopifnot(length(nnested) > 0)
@@ -250,19 +281,16 @@ mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
     stopifnot(!is.na(alpha))
     stopifnot(is.numeric(alpha))
     stopifnot(length(alpha) > 0)
-    stopifnot(alpha>0 & alpha<1)
+    stopifnot(alpha > 0 & alpha < 1)
 
-    if(is.null(y)) 
-	{
+    if(is.null(y)){
         stopifnot(is.matrix(x))
-        stopifnot(ncol(x)==2)
-        stopifnot(nrow(x)>2)
+        stopifnot(ncol(x) == 2)
+        stopifnot(nrow(x) > 2)
 		data <- x
-	} 
-	else 
-	{
+	}else{
         stopifnot(is.numeric(x) & is.numeric(y))
-        stopifnot(length(x)==length(y))
+        stopifnot(length(x) == length(y))
         stopifnot(length(x) > 2)	
         stopifnot(!all(is.na(x)) & !all(is.na(y)))
 		data <- cbind(x,y)
@@ -274,21 +302,19 @@ mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
         stopifnot(length(sample.names) == nrow(data))
     
 	## Remove NAs
-    if(na.rm) 
-	{
+    if(na.rm){
         cc <- complete.cases(data) 
         data <- data[cc,]
         sample.names <- sample.names[cc]
         npoints.new <- dim(data)[1]
-        if(npoints.old != npoints.new)
-        {
+        if(npoints.old != npoints.new){
             cat(paste(  "Please note: \n",round(npoints.old-npoints.new), " of ",npoints.old,
                         " observations contain missing values and have been removed.\nNumber of data points in analysis is ",
                         npoints.new,".\n", sep=""))
         }
     }
     stopifnot(!any(is.na(data)))
-    stopifnot((sd(data[,"x"])>0)&(sd(data[,"y"])>0))
+    stopifnot((sd(data[,"x"]) > 0) & (sd(data[,"y"]) > 0))
     
     #----- Limits for data points
     
@@ -304,103 +330,136 @@ mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
     ## For PaBa set error ratio 1 for correct weighted residual calculation
     if(method.reg %in% c("PaBa", "PaBaLarge")) error.ratio <- 1
 
-    if(method.reg=="WDeming" & min(data)<=0) 
+    if(method.reg == "WDeming" & min(data) <= 0) 
         stop("Weighted Deming regression for non-positive values is not available.")
-    if(method.reg %in% c("PaBa", "PaBaLarge") & min(data)<0) 
+    if(method.reg %in% c("PaBa", "PaBaLarge") & min(data) < 0) 
         stop("Passing-Bablok regression for negative values is not available.")	
-    if(method.reg=="WLinReg" & any(data==0)) 
+    if(method.reg == "WLinReg" & any(data == 0)) 
         stop("Weighted linear regression for zero values is not available.")
     if(method.reg %in% c("WDeming","PaBa") & method.ci=="bootstrap" & method.bootstrap.ci=="tBoot") 
         stop(paste("The analytical estimation of coefficients' SE for", method.reg ,"is not available. \nFor tBoot please choose nested bootstrap."))	
 
     ## Analytical confidence intervals
-    if(method.ci=="analytical") 
-    {
-        if(method.reg %in% c("PaBa", "PaBaLarge")) 
-        {
+    if(method.ci=="analytical"){
+        if(method.reg %in% c("PaBa", "PaBaLarge")){
             ## Determine if slope 1 or -1 is expected
             posCor <- cor(data[,"x"], data[,"y"], method="kendall") >= 0
-            if(method.reg == "PaBa")
-            {                
+            if(method.reg == "PaBa"){  
                 ## Compute slope matrix
-                angM <- mc.calcAngleMat(data[,"x"], data[,"y"], posCor=posCor)
+                #angM <- mc.calcAngleMat(data[,"x"], data[,"y"], posCor=posCor)
                 ## Regression
-                mc.res <- mc.paba(angM, data[,"x"], data[,"y"], posCor=posCor, alpha=alpha, slope.measure=slope.measure)		
-            }
-            else    # PaBaLarge: regression using the approximative PaBa-algorithm
-            {
-                mc.res <- mc.paba.LargeData( data[,"x"], data[,"y"], posCor=posCor, NBins=NBins, alpha=alpha )
+                mc.res <- mc.paba(angM = NULL, data[,"x"], data[,"y"], 
+									posCor = posCor, alpha = alpha, 
+									slope.measure = slope.measure)		
+            }else{    # PaBaLarge: regression using the approximative PaBa-algorithm
+                mc.res <- mc.paba.LargeData( data[,"x"], data[,"y"], 
+											posCor = posCor, NBins = NBins, 
+											alpha = alpha, slope.measure = slope.measure)
             }
             xmean <- as.numeric(NA)
             weight <- rep(1, nrow(data))
-        }
-        else if(method.reg %in% c("LinReg","WLinReg","Deming")) 
-        {
+        }else if(method.reg %in% c("LinReg","WLinReg","Deming","PBequi","TS")){
             mcr <- switch(  method.reg,
-                            LinReg=mc.linreg(data[,"x"], data[,"y"]),
-                            WLinReg=mc.wlinreg( data[,"x"], data[,"y"]),
-                            Deming=mc.deming(data[,"x"], data[,"y"], error.ratio))
-                    
+                            LinReg  = mc.linreg(data[,"x"], data[,"y"]),
+                            WLinReg = mc.wlinreg( data[,"x"], data[,"y"]),
+                            Deming = mc.deming(data[,"x"], data[,"y"], error.ratio),
+                            PBequi = mc.PBequi(data[,"x"],data[,"y"],method.reg="PBequi",slope.measure=slope.measure,methodlarge=methodlarge),
+                            TS = mc.PBequi(data[,"x"],data[,"y"],method.reg="TS",slope.measure=slope.measure,methodlarge=methodlarge)
+                            )
+			
             mc.res <- mc.analytical.ci(mcr$b0, mcr$b1, mcr$se.b0, mcr$se.b1, nrow(data), alpha)
             xmean <- mcr$xw
             weight <- mcr$weight
-        } 
-        else 
+            if(method.reg %in% c("PBequi")) error.ratio=1/(mcr$b1)^2
+        }else{ 
             stop(paste("The analytical estimation of confidence intervals for", method.reg, "is not available."))
+		}
+		
+                    result <- newMCResultAnalytical(method.names = mnames, 
+										sample.names = sample.names, 
+                                        wdata = data,
+										para = mc.res, 
+										xmean = xmean, 
+										regmeth = method.reg,
+                                        cimeth = method.ci, 
+										error.ratio = error.ratio, 
+										alpha = alpha, 
+										weight = weight)
+        
 
-        result <- newMCResultAnalytical(method.names = mnames, sample.names = sample.names, 
-                                        wdata=data,para=mc.res, xmean=xmean, regmeth=method.reg,
-                                        cimeth=method.ci, error.ratio=error.ratio, alpha=alpha, weight=weight)
-    }
-    ## Jackknife confidence intervals
-    else if(method.ci == "jackknife") 
-    {
+
+								
+    } else if(method.ci == "jackknife") {
         cat("Jackknife based calculation of standard error and confidence intervals according to Linnet's method.\n")
-        res <- mc.bootstrap(method.reg=method.reg, jackknife=TRUE,bootstrap="none", X=data[,"x"], Y=data[,"y"],
-                            error.ratio=error.ratio, nsamples=nsamples, NBins=NBins, slope.measure=slope.measure,
-                            threshold=threshold, iter.max=iter.max, nnested=nnested)
+        res <- mc.bootstrap(method.reg = method.reg, 
+							jackknife = TRUE,
+							bootstrap = "none", 
+							X = data[,"x"], Y = data[,"y"],
+                            error.ratio = error.ratio, 
+							nsamples = nsamples, 
+							NBins = NBins, 
+							slope.measure = slope.measure,
+                            threshold = threshold, 
+							iter.max = iter.max, 
+							nnested = nnested)
         B0jack <- res$B0jack
         B1jack <- res$B1jack
         glob.coef <- res$glob.coef
         jackB0 <- mc.calcLinnetCI(B0jack, glob.coef[1], alpha)
         jackB1 <- mc.calcLinnetCI(B1jack, glob.coef[2], alpha)
         weight <- res$weight
-        mc.res <- mc.make.CIframe(b0=jackB0$est, b1=jackB1$est, se.b0=jackB0$se, se.b1=jackB1$se, CI.b0=jackB0$CI, CI.b1=jackB1$CI)
-        result <- newMCResultJackknife( method.names = mnames, sample.names = sample.names, wdata=data, para=mc.res, regmeth=method.reg,
-                                        cimeth=method.ci, B0jack=B0jack, B1jack=B1jack, alpha=alpha, glob.coef=glob.coef,
-                                        error.ratio=error.ratio, weight=weight)
-    }
-    ## Bootstrap confidence intervals
-    else if(method.ci %in% c("bootstrap", "nestedbootstrap")) 
-    {
+        mc.res <- mc.make.CIframe(b0 = jackB0$est, b1 = jackB1$est, 
+									se.b0 = jackB0$se, se.b1 = jackB1$se, 
+									CI.b0 = jackB0$CI, CI.b1 = jackB1$CI)
+        result <- newMCResultJackknife( method.names = mnames, 
+										sample.names = sample.names, 
+										wdata = data, para = mc.res, 
+										regmeth = method.reg,
+                                        cimeth = method.ci, 
+										B0jack = B0jack, B1jack = B1jack, 
+										alpha = alpha, glob.coef = glob.coef,
+                                        error.ratio = error.ratio, weight = weight)
+		
+	## Bootstrap confidence intervals
+    }else if(method.ci %in% c("bootstrap", "nestedbootstrap")) {
         ## Set random number generator
         rng.old <- NULL
-        if(!is.null(rng.seed))
-        {
+        if(!is.null(rng.seed)){
             stopifnot(is.numeric(rng.seed))
-            stopifnot(length(rng.seed)==1)
+            stopifnot(length(rng.seed) == 1)
             if(exists(".Random.seed")) rng.old <- .Random.seed # store old RNG
-            set.seed(seed=rng.seed,kind=rng.kind)
-        }
-        else
-        {
+            set.seed(seed = rng.seed, kind = rng.kind)
+        }else{
             ## No defined RNG initialization => set parameters to NA for storage in object
             rng.seed <- as.numeric(NA)
             rng.kind <- as.character(NA)
         }
         
         #if (method.ci=="nestedbootstrap" & method.bootstrap.ci %in% c("Student","BCa")) warning("You need nested bootstrap only for 'tBoot' method.\n Please use option 'bootstrap' ")
-        if(method.bootstrap.ci == "BCa") 
-        {
-            res <- mc.bootstrap(method.reg=method.reg, jackknife=TRUE, bootstrap=method.ci, X=data[,"x"], Y=data[,"y"], NBins=NBins, slope.measure=slope.measure,
-                                error.ratio=error.ratio, nsamples=nsamples, threshold=threshold, iter.max=iter.max, nnested=nnested)
+        if(method.bootstrap.ci == "BCa"){
+            res <- mc.bootstrap(method.reg = method.reg, 
+								jackknife = TRUE, 
+								bootstrap = method.ci, 
+								X = data[,"x"], Y = data[,"y"], NBins = NBins, 
+								slope.measure = slope.measure,
+                                error.ratio = error.ratio, 
+								nsamples = nsamples, 
+								threshold = threshold, 
+								iter.max = iter.max, 
+								nnested = nnested)
             B0jack <- res$B0jack
             B1jack <- res$B1jack
-		} 
-        else 
-        {
-            res <- mc.bootstrap(method.reg=method.reg, jackknife=FALSE, bootstrap=method.ci, X=data[,"x"], Y=data[,"y"], NBins=NBins, slope.measure=slope.measure,
-                                error.ratio=error.ratio, nsamples=nsamples, threshold=threshold, iter.max=iter.max, nnested=nnested)
+		}else{
+            res <- mc.bootstrap(method.reg = method.reg, 
+								jackknife = FALSE, 
+								bootstrap = method.ci, 
+								X = data[,"x"], Y = data[,"y"], NBins = NBins, 
+								slope.measure = slope.measure,
+                                error.ratio = error.ratio, 
+								nsamples = nsamples, 
+								threshold = threshold, 
+								iter.max = iter.max, 
+								nnested = nnested)
         }               
         xmean <- res$xmean
         B0 <- res$B0
@@ -415,54 +474,56 @@ mcreg <- function(x,y=NULL,error.ratio=1,alpha=0.05,
         nnested <- res$nnested
         weight <- res$weight
         
-        if(method.bootstrap.ci == "Student") 
-        {
-            bootB0 <- mc.calc.Student(B0,xhat=glob.coef[1],alpha, npoints)
-            bootB1 <- mc.calc.Student(B1,xhat=glob.coef[2],alpha, npoints)
-        } 
-        else if(method.bootstrap.ci == "BCa") 
-        {
+        if(method.bootstrap.ci == "Student"){
+            bootB0 <- mc.calc.Student(B0, xhat=glob.coef[1], alpha, npoints)
+            bootB1 <- mc.calc.Student(B1, xhat=glob.coef[2], alpha, npoints)
+        } else if(method.bootstrap.ci == "BCa") {
             bootB0 <- mc.calc.bca(Xboot=B0, Xjack=B0jack, xhat=glob.coef[1], alpha)
             bootB1 <- mc.calc.bca(Xboot=B1, Xjack=B1jack, xhat=glob.coef[2], alpha)
             bootB0$se <- glob.sigma[1]
             bootB1$se <- glob.sigma[2]
             bootB0$se <- NA
             bootB1$se <- NA
-        } 
-        else if(method.bootstrap.ci == "tBoot") 
-        {
+        }else if(method.bootstrap.ci == "tBoot"){
             bootB0 <- mc.calc.tboot(Xboot=B0, Sboot=sigmaB0, xhat=glob.coef[1], shat=glob.sigma[1], alpha)
             bootB1 <- mc.calc.tboot(Xboot=B1, Sboot=sigmaB1, xhat=glob.coef[2], shat=glob.sigma[2], alpha)
-        }  
-        else if(method.bootstrap.ci == "quantile") 
-        {
+        }else if(method.bootstrap.ci == "quantile"){
             bootB0 <- mc.calc.quantile(Xboot=B0, alpha)
             bootB1 <- mc.calc.quantile(Xboot=B1, alpha)
             bootB0$se <- NA
             bootB1$se <- NA
         }
-				
-        if(method.reg=="WDeming") 
+        if(method.reg == "WDeming") 
             cat("The global.sigma is calculated with Linnet's method\n")
 		
-        mc.res <- mc.make.CIframe(b0=glob.coef[1], b1=glob.coef[2], se.b0=bootB0$se, se.b1=bootB1$se, CI.b0=bootB0$CI, CI.b1=bootB1$CI)
+        mc.res <- mc.make.CIframe(b0 = glob.coef[1], b1 = glob.coef[2], 
+									se.b0 = bootB0$se, se.b1 = bootB1$se, 
+									CI.b0 = bootB0$CI, CI.b1 = bootB1$CI)
         
-        if(method.bootstrap.ci == "BCa")
-        {
-            result <- newMCResultBCa(method.names = mnames, sample.names = sample.names, 
-                                     wdata=data, para=mc.res, xmean=xmean, regmeth=method.reg,
-                                     cimeth=method.ci, bootcimeth=method.bootstrap.ci, B0jack=B0jack, B1jack=B1jack,
-                                     B0=B0, B1=B1, MX=MX, sigmaB0=sigmaB0, sigmaB1=sigmaB1, alpha=alpha, glob.coef=glob.coef,
-                                     glob.sigma=glob.sigma, nsamples=nsamples, nnested=nnested, error.ratio=error.ratio,
-                                     rng.seed=rng.seed,rng.kind=rng.kind, weight=weight)
-        }  
-        else 
-        {
-            result <- newMCResultResampling(method.names = mnames, sample.names = sample.names, 
-                                            wdata=data, para=mc.res, xmean=xmean, regmeth=method.reg,
+        if(method.bootstrap.ci == "BCa"){
+            result <- newMCResultBCa(method.names = mnames, 
+									sample.names = sample.names, 
+                                    wdata=data, para=mc.res, xmean=xmean, 
+									regmeth=method.reg,
+                                    cimeth=method.ci, bootcimeth=method.bootstrap.ci, 
+									B0jack=B0jack, B1jack=B1jack,
+                                    B0=B0, B1=B1, MX=MX, 
+									sigmaB0=sigmaB0, sigmaB1=sigmaB1, 
+									alpha=alpha, glob.coef=glob.coef,
+                                    glob.sigma=glob.sigma, nsamples=nsamples, 
+									nnested=nnested, error.ratio=error.ratio,
+                                    rng.seed=rng.seed, rng.kind=rng.kind, weight=weight)
+        }else{
+            result <- newMCResultResampling(method.names = mnames, 
+											sample.names = sample.names, 
+                                            wdata=data, para=mc.res, xmean=xmean, 
+											regmeth=method.reg,
                                             cimeth=method.ci, bootcimeth=method.bootstrap.ci,
-                                            B0=B0, B1=B1, MX=MX, sigmaB0=sigmaB0, sigmaB1=sigmaB1, alpha=alpha, glob.coef=glob.coef,
-                                            glob.sigma=glob.sigma, nsamples=nsamples, nnested=nnested, error.ratio=error.ratio,
+                                            B0=B0, B1=B1, MX=MX, 
+											sigmaB0=sigmaB0, sigmaB1=sigmaB1, 
+											alpha=alpha, glob.coef=glob.coef,
+                                            glob.sigma=glob.sigma, nsamples=nsamples, 
+											nnested=nnested, error.ratio=error.ratio,
                                             rng.seed=rng.seed,rng.kind=rng.kind, weight=weight)
         }
         

@@ -96,6 +96,10 @@ includeLegend <- function(models = list(), digits = 2,design = paste(1:2),
         		        RegType[i] <-"Linear Regression"
         	    } else if (x@regmeth == "WLinReg") {
         		    RegType[i] <-"Weighted Linear Regression"
+        	    } else if (x@regmeth == "TS") {
+        		    RegType[i] <-"Theil-Sen Regression"
+        	    } else if (x@regmeth == "PBequi") {
+        		    RegType[i] <-"Equivariant Passing-Bablok Regression"
         	    } else if (x@regmeth == "Deming") {
         		    RegType[i] <-"Deming Regression"
         	    } else if (x@regmeth == "WDeming") {

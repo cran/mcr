@@ -48,7 +48,7 @@ newMCResultAnalytical <- function(wdata,para,xmean,sample.names=NULL,method.name
     stopifnot(is.matrix(para))
     stopifnot(all(dim(para)==c(2,4)))
     stopifnot(is.character(regmeth))
-    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","PaBa","WDeming", "PaBaLarge")))
+    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","PaBa","WDeming", "PaBaLarge","PBequi","TS")))
     stopifnot(is.character(cimeth))
     stopifnot(cimeth=="analytical")
     stopifnot(is.numeric(alpha))
@@ -99,7 +99,7 @@ newMCResultAnalytical <- function(wdata,para,xmean,sample.names=NULL,method.name
 #' @param regmeth string specifying the regression-method 
 #' @param cimeth string specifying the confidence interval method
 #' @param error.ratio for deming regression 
-#' @param alpha value specifying the 100(1-alpha)% confidence-level
+#' @param alpha value specifying the 100(1-alpha)\% confidence-level
 #' @param weight 1 for each data point
 
 MCResultAnalytical.initialize <- function(.Object,data=data.frame(X=NA,Y=NA),xmean=0,para=matrix(NA,ncol=4,nrow=2),
@@ -181,6 +181,8 @@ MCResultAnalytical.printSummary<-function(.Object)
     regmeth<-.Object@regmeth
     regtext<-""
     if (regmeth=="LinReg") regtext<-"Linear Regression"
+    if (regmeth=="PBequi") regtext<-"equivariant Passing-Bablok Regression"
+    if (regmeth=="TS") regtext<-"Theil-Sen regression "
     if (regmeth=="WLinReg") regtext<-"Weighted Linear Regression"
     if (regmeth=="Deming") regtext<-"Deming Regression"
     if (regmeth=="WDeming") regtext <- "Weighted Deming Regression"

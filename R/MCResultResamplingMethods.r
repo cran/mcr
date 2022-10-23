@@ -64,7 +64,7 @@ newMCResultResampling <- function(wdata,para,xmean,sample.names=NULL,method.name
     stopifnot(is.matrix(para))
     stopifnot(all(dim(para)==c(2,4)))
     stopifnot(is.character(regmeth))
-    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","PaBa","WDeming", "PaBaLarge")))
+    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","PaBa","WDeming", "PaBaLarge","TS","PBequi")))
     stopifnot(is.character(cimeth))
     stopifnot(is.element(cimeth,c("bootstrap","nestedbootstrap")))
     stopifnot(is.character(bootcimeth))
@@ -142,7 +142,7 @@ newMCResultResampling <- function(wdata,para,xmean,sample.names=NULL,method.name
 #' @param cimeth string specifying the confidence interval method
 #' @param bootcimeth string specifying the method for bootstrap confidence intervals
 #' @param error.ratio for deming regression 
-#' @param alpha value specifying the 100(1-alpha)% confidence-level
+#' @param alpha value specifying the 100(1-alpha)\% confidence-level
 #' @param glob.coef global coefficients
 #' @param rng.seed random number generator seed
 #' @param rng.kind type of the random number generator
@@ -379,6 +379,8 @@ MCResultResampling.printSummary<-function(.Object){
     regtext<-""
     if (regmeth=="LinReg") regtext<-"Linear Regression"
     if (regmeth=="WLinReg") regtext<-"Weighted Linear Regression"
+    if (regmeth=="TS") regtext<-"Theil-Sen Regression"
+    if (regmeth=="PBequi") regtext<-"Equivariant Passing-Bablok Regression"
     if (regmeth=="Deming") regtext<-"Deming Regression"
     if (regmeth=="WDeming") regtext <- "Weighted Deming Regression"
     if (regmeth %in% c("PaBa", "PaBaLarge")) regtext <- "Passing Bablok Regression"

@@ -39,45 +39,54 @@
 #'              Linnet K.
 #'              Estimation of the Linear Relationship between the Measurements of two Methods with Proportional Errors.
 #'              STATISTICS IN MEDICINE, Vol. 9, 1463-1473 (1990).
-mc.deming<-function(X, Y, error.ratio)
-{    
+
+
+
+
+mc.deming <- function(X, Y, error.ratio)
+{
     # Check validity of parameters
-      
+	nX <- length(X)
+	nY <- length(Y)
+	
     stopifnot(!is.na(X))
     stopifnot(!is.na(Y))
     stopifnot(is.numeric(X))
     stopifnot(is.numeric(Y))
-    stopifnot(length(X)==length(Y))
-    stopifnot(length(X) > 0)
+	stopifnot(nX > 0)
+    stopifnot(nX == nY)
     stopifnot(!is.na(error.ratio))
     stopifnot(is.numeric(error.ratio))
-    stopifnot(error.ratio>0)
+    stopifnot(error.ratio > 0)
     stopifnot(length(error.ratio) > 0)
     
-    #--
-    n <- length(X)
-	mX <- mean(X)
-	mY <- mean(Y)
-	u <- sum((X-mX)^2)
-	q <- sum((Y-mY)^2)
-	p <- sum((X-mX)*(Y-mY))
-	r <- p/sqrt(u*q)
-
-	## Estimated points
-	# [ Ref. K.Linnet. Estimation of the linear relationship between
-    #        the measurements of two methods with  Proportional errors.
-    #        STATISTICS IN MEDICINE, VOL. 9, 1463-1473 (1990)].
-	#
 	
-	b1 <- ((error.ratio*q-u)+sqrt((u-error.ratio*q)^2+4*error.ratio*p^2))/(2*error.ratio*p)
-	b0 <- mean(Y)-b1*mean(X)
+	######################################################
+	###  call C-function
+	intercept <- slope <- seIntercept <- seSlope <- 0
+	xw <- maxit <- threshold <- 0
+	
+	### mode = 0 - Deming regression
+	### mode = 1 - WDeming regression
+	mode <- 0
+	W <- rep(1, nX)
+	
+	model.Deming <- .C("calc_Deming", 
+						x = as.numeric(X), y = as.numeric(Y), 
+						n = as.integer(nX), 
+						error_ratio = as.numeric(error.ratio), 
+						intercept = as.numeric(intercept), 
+						slope = as.numeric(slope), 
+						seIntercept = as.numeric(seIntercept), 
+						seSlope = as.numeric(seSlope), 
+						mode = as.integer(mode), 
+						maxit = as.integer(maxit), 
+						threshold = as.numeric(threshold), 
+						W = as.numeric(W), 
+						xw = as.numeric(xw), 
+						PACKAGE="mcr")
 
-    ## Standard error
-    # [Ref. Strike, P. W. (1991) Statistical Methods in Laboratory Medicine.
-    #       Butterworth-Heinemann, Oxford ].
-  
-    se.b1 <- sqrt(b1^2*(calcDiff(1,r^2)/r^2)/(n-2))
-	se.b0 <- sqrt(se.b1^2*mean(X^2))
-
-	return(list(b0=b0, b1=b1, se.b0=se.b0, se.b1=se.b1, xw=mX,  weight=rep(1,length(X))))
+	list(b0 = model.Deming$intercept, b1 = model.Deming$slope, 
+		se.b0 = model.Deming$seIntercept, se.b1 = model.Deming$seSlope, 
+		xw = model.Deming$xw,  weight = model.Deming$W)
 }

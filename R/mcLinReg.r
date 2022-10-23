@@ -35,7 +35,7 @@
 #' @references  Neter J., Wassermann W., Kunter M.
 #'              Applied Statistical Models. 
 #'              Richard D. Irwing, INC., 1985.
-mc.linreg <- function(X,Y) 
+mc.linreg <- function(X, Y) 
 {
     ## Check validity of parameters
     stopifnot(!is.na(X))
@@ -47,28 +47,27 @@ mc.linreg <- function(X,Y)
 
 	## Number of data points
 	n <- length(X)
-    W <- rep(1,n)
-
-    #--
-  	XW <- sum(W*X)/sum(W)
-    YW <- sum(W*Y)/sum(W)
-    SXXW <- sum(W*X^2)-(sum(W*X)^2)/sum(W)
-    SXYW <- sum(W*X*Y)-(sum(W*X)*sum(W*Y)/sum(W))
-
-	## Point estimates
-
-  	b1 <- SXYW/SXXW
-  	b0 <- YW-b1*XW
-
-	## Standard errors
+    W <- rep(1, n)
 	
-    MSEW <- 1/(n-2)*sum(W*(Y-(b0+b1*X))^2)
-    se.b1 <- sqrt(MSEW/SXXW)
-  	se.b0 <- se.b1*sqrt(sum(W*X^2)/sum(W))
-
+	
+	######################################################
+	###  call C-function
+	intercept <- slope <- seIntercept <- seSlope <- xw <- 0
+		
+	model.linreg <- .C("calc_Linreg", 
+						X = as.numeric(X), Y = as.numeric(Y), N = as.integer(n), 
+						intercept = as.numeric(intercept), slope = as.numeric(slope), 
+						seIntercept = as.numeric(seIntercept), seSlope = as.numeric(seSlope), 
+						W = as.numeric(W), XW = as.numeric(xw), PACKAGE="mcr")
+	
+	
 	## Return estimates and sd
-
-    return(list(b0=b0,b1=b1,se.b0=se.b0,se.b1=se.b1,xw=XW, weight=rep(1,length(X))))
+    list(b0 = model.linreg$intercept, 
+		b1 = model.linreg$slope, 
+		se.b0 = model.linreg$seIntercept, 
+		se.b1 = model.linreg$seSlope, 
+		xw = model.linreg$XW, 
+		weight = model.linreg$W)
 }
 
 #' Calculate Weighted Ordinary Linear Regression
@@ -88,7 +87,7 @@ mc.linreg <- function(X,Y)
 #' @references  Neter J., Wassermann W., Kunter M.
 #'              Applied Statistical Models. 
 #'              Richard D. Irwing, INC., 1985.
-mc.wlinreg <- function(X,Y) 
+mc.wlinreg <- function(X, Y) 
 {
     ## Check validity of parameters
     stopifnot(!is.na(X))
@@ -99,30 +98,32 @@ mc.wlinreg <- function(X,Y)
     stopifnot(length(X) > 0)
 
   	## Number of data points
-	  n <- length(X)
+	n <- length(X)
 
     ## Weights
     W <- 1/X^2
-
-    #--
-  	XW <- sum(W*X)/sum(W)
-    YW <- sum(W*Y)/sum(W)
-    SXXW <- sum(W*X^2)-(sum(W*X)^2)/sum(W)
-    SXYW <- sum(W*X*Y)-(sum(W*X)*sum(W*Y)/sum(W))
-
-	## Point estimates
-
-  	b1<-SXYW/SXXW
-  	b0<-YW-b1*XW
-
-	## Standard errors
 	
-    MSEW <- 1/(n-2)*sum(W*(Y-(b0+b1*X))^2)
-    se.b1 <- sqrt(MSEW/SXXW)
-  	se.b0 <- se.b1*sqrt(sum(W*X^2)/sum(W))
-
+	
+	######################################################
+	###  call C-function
+	intercept <- slope <- seIntercept <- seSlope <- xw <- 0
+	
+	model.linreg <- .C("calc_Linreg", 
+						X = as.numeric(X), Y = as.numeric(Y), N = as.integer(n), 
+						intercept = as.numeric(intercept), slope = as.numeric(slope), 
+						seIntercept = as.numeric(seIntercept), seSlope = as.numeric(seSlope), 
+						W = as.numeric(W), XW = as.numeric(xw), PACKAGE="mcr")
+	
+	
 	## Return estimates and sd
-
-    return(list(b0=b0,b1=b1,se.b0=se.b0,se.b1=se.b1,xw=XW, weight=W))
+	list(b0 = model.linreg$intercept, 
+			b1 = model.linreg$slope, 
+			se.b0 = model.linreg$seIntercept, 
+			se.b1 = model.linreg$seSlope, 
+			xw = model.linreg$XW, 
+			weight = model.linreg$W)
 }
+
+
+
 

@@ -17,6 +17,8 @@
 \alias{plotDifference,MCResult-method}
 \alias{plotResiduals,MCResult-method}
 \alias{printSummary,MCResult-method}
+\alias{coef,MCResult-method}
+\alias{summary,MCResult-method}
 
 \title{Class \code{"MCResult"}}
 \description{
@@ -44,6 +46,7 @@ Object can be directly constructed by calling \code{\link{newMCResult}} or \code
     \item{calcCUSUM}{\code{signature(.Object = "MCResult")}: ... }
     \item{calcResponse}{\code{signature(.Object = "MCResult")}: ... }
     \item{getCoefficients}{\code{signature(.Object = "MCResult")}: ... }
+	\item{coef}{\code{signature(.Object = "MCResult")}: ... }
     \item{getData}{\code{signature(.Object = "MCResult")}: ... }
     \item{getErrorRatio}{\code{signature(.Object = "MCResult")}: ... }
     \item{getRegmethod}{\code{signature(.Object = "MCResult")}: ... }
@@ -54,12 +57,14 @@ Object can be directly constructed by calling \code{\link{newMCResult}} or \code
     \item{plotDifference}{\code{signature(.Object = "MCResult")}: ... }
     \item{plotResiduals}{\code{signature(.Object = "MCResult")}: ... }
     \item{printSummary}{\code{signature(.Object = "MCResult")}: ... }
+	\item{summary}{\code{signature(.Object = "MCResult")}: ... }
 	 }
 }
 \author{
 Ekaterina Manuilova \email{ekaterina.manuilova@roche.com}, 
 Andre Schuetzenmeister \email{andre.schuetzenmeister@roche.com}, 
 Fabian Model \email{fabian.model@roche.com}
+Sergej Potapov \email{sergej.potapov@roche.com}
 }
 \examples{
 showClass("MCResult")

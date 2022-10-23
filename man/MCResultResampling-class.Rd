@@ -4,6 +4,7 @@
 \alias{MCResultResampling-class}
 \alias{calcResponse,MCResultResampling-method}
 \alias{printSummary,MCResultResampling-method}
+\alias{summary,MCResultResampling-method}
 
 \title{Class \code{"MCResultResampling"}}
 \description{
@@ -45,12 +46,14 @@ Class \code{"\linkS4class{MCResult}"}, directly.
   \describe{
     \item{calcResponse}{\code{signature(.Object = "MCResultResampling")}: ... }
     \item{printSummary}{\code{signature(.Object = "MCResultResampling")}: ... }
+	\item{summary}{\code{signature(.Object = "MCResultResampling")}: ... }
 	 }
 }
 \author{
 Ekaterina Manuilova \email{ekaterina.manuilova@roche.com}, 
 Andre Schuetzenmeister \email{andre.schuetzenmeister@roche.com}, 
-Fabian Model \email{fabian.model@roche.com}
+Fabian Model \email{fabian.model@roche.com},
+Sergej Potapov \email{sergej.potapov@roche.com}
 }
 \examples{
 showClass("MCResultResampling")

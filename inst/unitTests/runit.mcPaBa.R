@@ -208,9 +208,9 @@ test.mc.paba.resampling1 <- function()
 		ind <- sample(1:length(x), length(x), replace=TRUE)
 		posCor <- ifelse(cor(x[ind],y[ind],method="kendall") >= 0, TRUE, FALSE)
 		test1 <- try( mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=FALSE) )		# test without CI
-		checkTrue( class(test1) != "try-error")
+		checkTrue( !(  "try-error" %in% class(test1)))
 		test2 <- try( mcr:::mc.paba(angM[ind,ind],x[ind],y[ind], posCor=posCor, calcCI=TRUE) )		# test with CI
-		checkTrue( class(test2) != "try-error")
+		checkTrue( !(  "try-error" %in% class(test2)))
 	}
 	
 	for(i in 1:2000) {f(td.idxprob[,1],td.idxprob[,2])} # call mc.paba with different data configurations, first occurence of K=N/2 configuration in iteration 734

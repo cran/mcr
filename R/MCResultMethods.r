@@ -47,7 +47,7 @@ newMCResult <- function(wdata, para, sample.names=NULL, method.names=NULL, regme
     stopifnot(is.matrix(para))
     stopifnot(all(dim(para)==c(2,4)))
     stopifnot(is.character(regmeth))
-    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","BaPa","WDeming", "PaBaLarge")))
+    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","BaPa","WDeming", "PaBaLarge","TS","PBequi")))
     stopifnot(!is.na(alpha))
     stopifnot(is.numeric(alpha))
     stopifnot(length(alpha) > 0)
@@ -121,7 +121,8 @@ MCResult.initialize <- function(.Object, data=data.frame(X=NA,Y=NA), para=matrix
 #'
 #' @param .Object object of class "MCResult".
 #' @return Regression parameters in matrix form. Rows: Intercept, Slope. Cols: EST, SE, LCI, UCI.
-#' @aliases getCoefficients
+#' @aliases getCoefficients coef
+#'
 
 MCResult.getCoefficients <- function(.Object)
 {
@@ -164,7 +165,7 @@ MCResult.getData <- function(.Object)
 
 #' Get Regression Residuals
 #' 
-#' This function returnes residuals in x-direction (x-xhat),
+#' This function returns residuals in x-direction (x-xhat),
 #' in y-direction(y-yhat) and optimized residuals.
 #' The optimized residuals correspond to distances between 
 #' data points and the regression line which were optimized for
@@ -182,12 +183,12 @@ MCResult.getResiduals <- function(.Object)
     weight <- getWeights(.Object)
     x <- .Object@data$x
     y <- .Object@data$y
-    lmb <- .Object@error.ratio
+    lmb <-ifelse(.Object@regmeth %in% c("PBequi"),(1/.Object@para["Slope",1])^2, .Object@error.ratio)
     a <- .Object@para["Intercept",1]
     b <- .Object@para["Slope",1]
     d <- y-(a+b*x)
            
-    if (.Object@regmeth %in% c("LinReg","WLinReg")){
+    if (.Object@regmeth %in% c("LinReg","WLinReg","TS")){
         xhat <- x
         yhat <- a + b*x
     } else {
@@ -197,7 +198,7 @@ MCResult.getResiduals <- function(.Object)
     xres <- x-xhat
     yres <- y-yhat
  
-    if (.Object@regmeth %in% c("LinReg","WLinReg")){
+    if (.Object@regmeth %in% c("LinReg","WLinReg","TS")){
         res <- yres*sqrt(weight)
     } else {
         res <- sign(yres)*sqrt((xres)^2+lmb*(yres)^2)*sqrt(weight)
@@ -224,19 +225,17 @@ MCResult.getFitted <- function(.Object)
 {
     x <- .Object@data$x
     y <- .Object@data$y
-    lmb <- .Object@error.ratio
+    lmb <-ifelse(.Object@regmeth %in% c("PBequi"),(1/.Object@para["Slope",1])^2, .Object@error.ratio)
     a <- .Object@para["Intercept",1]
     b <- .Object@para["Slope",1]
     
     d <- y-(a+b*x)
         
-    if (.Object@regmeth %in% c("LinReg","WLinReg"))
+    if (.Object@regmeth %in% c("LinReg","WLinReg","TS"))
     {
         xhat <- x
         yhat <- a + b*x
-    } 
-    else
-    { 
+    } else {
         xhat <- x+lmb*b*d/(1+lmb*b^2)
         yhat <- y-d/(1+lmb*b^2)
     } 
@@ -635,6 +634,8 @@ MCResult.calcBias <- function(.Object, x.levels, type = c("absolute", "proportio
 #' @param draw.points logical value. If \code{draw.points=TRUE}, the data points will be drawn. 
 #' @param xlim limits of the x-axis. If \code{xlim=NULL} the x-limits will be calculated automatically.
 #' @param ylim limits of the y-axis. If \code{ylim=NULL} the y-limits will be calculated automatically.
+#' @param xaxp ticks of the x-axis. If \code{xaxp=NULL} the x-ticks will be calculated automatically.
+#' @param yaxp ticks of the y-axis. If \code{yaxp=NULL} the y-ticks will be calculated automatically.
 #' @param x.lab label of x-axis. Default is the name of reference method.
 #' @param y.lab label of y-axis. Default is the name of test method.
 #' @param equal.axis logical value. If \code{equal.axis=TRUE} x-axis will be equal to y-axis.
@@ -662,7 +663,8 @@ MCResult.calcBias <- function(.Object, x.levels, type = c("absolute", "proportio
 #' @param sub String value. The subtitle of plot. If \code{sub=NULL} and \code{ci.border=TRUE} or \code{ci.area=TRUE} it will include the art of confidence bounds calculation.
 #' @param add.cor Logical value. If \code{add.cor=TRUE} the correlation coefficient will be shown. 
 #' @param cor.method a character string indicating which correlation coefficient is to be computed. One of "pearson" (default), "kendall", or "spearman", can be abbreviated.
-#' @param add.grid Logical value. If \code{add.grid=TRUE} (default) the gridlines will be drawn.  
+#' @param add.grid Logical value. If \code{add.grid=TRUE} (default) the gridlines will be drawn.
+#' @param digits list with the number of digits for the regression equation and the correlation coefficient. 
 #' @param ... further graphical parameters
 #' @seealso \code{\link{plotBias}}, \code{\link{plotResiduals}}, \code{\link{plotDifference}}, \code{\link{compareFit}},\code{\link{includeLegend}}
 #' @aliases plot.mcr
@@ -691,40 +693,43 @@ MCResult.calcBias <- function(.Object, x.levels, type = c("absolute", "proportio
 #'   includeLegend(place="topleft",models=list(m1,m2),
 #'                            colors=c("darkblue","red"), design="1", digits=2)
 MCResult.plot <- function(x,
-                          alpha = 0.05 ,
-                          xn = 20,
-                          equal.axis=FALSE,
-                          xlim = NULL,
-                          ylim = NULL,
-                          x.lab = x@mnames[1],
-                          y.lab = x@mnames[2],
-                          add = FALSE,
-                          draw.points = TRUE,
-                          points.col = "black",
-                          points.pch =  1,
-                          points.cex = 0.8,
-                          reg = TRUE,              # regression line
-                          reg.col =NULL,  
-                          reg.lty =1, 
-                          reg.lwd = 2,
-                          identity = TRUE,         # bisecting line of an angle
-                          identity.col = NULL,
-                          identity.lty = 2,
-                          identity.lwd = 1,
-                          ci.area = TRUE,          # confidence bounds as area
-                          ci.area.col = NULL, 
-                          ci.border = FALSE, 
-                          ci.border.col = NULL,    # confidence bounds as lines
-                          ci.border.lty = 2,
-                          ci.border.lwd = 1,
-                          add.legend = TRUE,
-                          legend.place = c("topleft","topright","bottomleft","bottomright"),
-                          main = NULL,
-                          sub = NULL,
-                          add.cor = TRUE,
-                          cor.method = c("pearson", "kendall", "spearman"),
-                          add.grid= TRUE,
-                          ...) 
+		alpha = 0.05 ,
+		xn = 20,
+		equal.axis=FALSE,
+		xlim = NULL,
+		ylim = NULL,
+		xaxp = NULL,
+		yaxp = NULL,
+		x.lab = x@mnames[1],
+		y.lab = x@mnames[2],
+		add = FALSE,
+		draw.points = TRUE,
+		points.col = "black",
+		points.pch =  1,
+		points.cex = 0.8,
+		reg = TRUE,              # regression line
+		reg.col =NULL,  
+		reg.lty =1, 
+		reg.lwd = 2,
+		identity = TRUE,         # bisecting line of an angle
+		identity.col = NULL,
+		identity.lty = 2,
+		identity.lwd = 1,
+		ci.area = TRUE,          # confidence bounds as area
+		ci.area.col = NULL, 
+		ci.border = FALSE, 
+		ci.border.col = NULL,    # confidence bounds as lines
+		ci.border.lty = 2,
+		ci.border.lwd = 1,
+		add.legend = TRUE,
+		legend.place = c("topleft","topright","bottomleft","bottomright"),
+		main = NULL,
+		sub = NULL,
+		add.cor = TRUE,
+		cor.method = c("pearson", "kendall", "spearman"),
+		add.grid= TRUE,
+		digits = list(coef = 2, cor = 3),
+		...) 
 {	
 	stopifnot(is.logical(reg))
 	stopifnot(is.logical(ci.area))
@@ -737,211 +742,349 @@ MCResult.plot <- function(x,
 	stopifnot(is.numeric(alpha))
 	stopifnot(alpha>0 & alpha<1)
 	
-    cor.method <- match.arg(cor.method)
-    stopifnot(is.element(cor.method, c("pearson", "kendall", "spearman")))
+	if(is.null(digits)){
+		digits = list(coef = 2, cor = 3)
+	}
+	stopifnot(sum(names(digits) %in% c("coef", "cor")) >= length(names(digits)))
+	if(is.null(digits$coef)){
+		digits$coef <- 2
+	}
+	if(is.null(digits$cor)){
+		digits$cor <- 3
+	}
+	cor.method <- match.arg(cor.method)
+	stopifnot(is.element(cor.method, c("pearson", "kendall", "spearman")))
 	
-    legend.place <- match.arg(legend.place)
-	  stopifnot(is.element(legend.place, c("topleft","topright","bottomleft","bottomright")))
-    if(length(points.col)>1) stopifnot(length(points.col)==nrow(x@data))
-    if(length(points.pch)>1) stopifnot(length(points.pch)==nrow(x@data))
-    
-  	if(x@regmeth == "LinReg")
+	legend.place <- match.arg(legend.place)
+	stopifnot(is.element(legend.place, c("topleft","topright","bottomleft","bottomright")))
+	if(length(points.col)>1) stopifnot(length(points.col)==nrow(x@data))
+	if(length(points.pch)>1) stopifnot(length(points.pch)==nrow(x@data))
+	
+	if(x@regmeth == "LinReg")
 		titname<-"Linear Regression"
-    else if(x@regmeth == "WLinReg")
+	else if(x@regmeth == "WLinReg")
 		titname<-"Weighted Linear Regression"
-    else if(x@regmeth == "Deming")
+	else if(x@regmeth == "TS")
+		titname<-"Theil-Sen Regression"
+	else if(x@regmeth == "PBequi")
+		titname<-"Equivariant Passing-Bablok Regression"
+	else if(x@regmeth == "Deming")
 		titname<-"Deming Regression"
-    else if(x@regmeth == "WDeming")
-        titname<-"Weighted Deming Regression"
-    else 
-        titname <- "Passing Bablok Regression"
- 
-    ## Colors
-    niceblue <- rgb(37/255,52/255,148/255)
-    niceor <- rgb(230/255,85/255,13/255)
-    niceblue.bounds <- rgb(236/255, 231/255, 242/255)
-    	
-    if(is.null(reg.col)) 
-        reg.col <- niceblue 
-    if(is.null(identity.col)) 
-        identity.col <- niceor
-    if(is.null(ci.area.col)) 
-        ci.area.col <- niceblue.bounds
-    if(is.null(ci.border.col)) 
-        ci.border.col <- niceblue
+	else if(x@regmeth == "WDeming")
+		titname<-"Weighted Deming Regression"
+	else 
+		titname <- "Passing Bablok Regression"
+	
+	## Colors
+	niceblue <- rgb(37/255,52/255,148/255)
+	niceor <- rgb(230/255,85/255,13/255)
+	niceblue.bounds <- rgb(236/255, 231/255, 242/255)
+	
+	if(is.null(reg.col)) 
+		reg.col <- niceblue 
+	if(is.null(identity.col)) 
+		identity.col <- niceor
+	if(is.null(ci.area.col)) 
+		ci.area.col <- niceblue.bounds
+	if(is.null(ci.border.col)) 
+		ci.border.col <- niceblue
 	
 	stopifnot(is.numeric(xn))
 	stopifnot(round(xn) == xn)                     
 	stopifnot(xn>1)
-	
+	# In case xlim was not set calculate it from the data
 	if(is.null(xlim)) 
-        rx <- range(x@data[,"x"],na.rm=TRUE)
+		rx <- range(x@data[,"x"],na.rm=TRUE)
 	else
-        rx <- xlim
-        
+		rx <- xlim
+	
+	tmp.range <- range(as.vector(x@data[,c("x","y")]), na.rm = TRUE)
+	
+	if(equal.axis == TRUE){
+		if(is.null(ylim)){
+			yrange <- tmp.range
+		}else{
+			yrange <- ylim
+		}		
+	}else{
+		if(is.null(ylim)){
+			yrange <- range(as.vector(x@data[,"y"]),na.rm=TRUE)
+		}else{
+			yrange <- ylim
+		}
+	}
+	
+	if(!is.null(xlim) && !is.null(ylim) && equal.axis){
+		xlim <- c(
+				min(c(xlim[1],ylim[1])),
+				max(c(xlim[2],ylim[2]))
+		)
+	}
+	
+	# In case xaxp was not set
+	if(is.null(xaxp)){
+		
+		# Check if xlim is set
+		if(!is.null(xlim)){
+			
+			# Then get the ticks from xlim
+			axis_ticks <- axisTicks( 
+					c(
+							xlim[1]-0.05*xlim[2],
+							ceiling((xlim[2]+0.05*xlim[2])*10^digits$coef)/10^digits$coef
+					),
+					log=F,
+					nint=7
+			)
+			# If no limits were created get the maximum and minimum
+			#  of the data +- 10% as limits
+			xaxp <- c(axis_ticks[1],tail(axis_ticks, n=1),length(axis_ticks)-1)
+			xlim <- c(axis_ticks[1],tail(axis_ticks, n=1))
+		}
+	}else{
+		if(!is.null(xlim)){
+			# If xaxp is set, fit the xlim to xaxp
+			# but just in case, it was not delivered and was taken from data
+			if((xlim[1]==rx[1] && xlim[2]==rx[2]) | (tmp.range[1]==xlim[1] && tmp.range[2]==xlim[2])){
+				xlim <- c(xaxp[1],xaxp[2])
+			}
+		}else{
+			warning("xaxp should never be set without xlim")
+			xaxp <- NULL
+		}
+	}
+	
+	if(is.null(yaxp)){
+		# Check if limits were created
+		
+		# create an xaxp parameter form axis_ticks
+		# If Y-axis limits are given calculate the Y-axis ticks
+		# from those
+		if(!is.null(ylim) && !equal.axis){
+			yaxp <- axis_ticks <- axisTicks( 
+					c(
+							ylim[1]-0.05*ylim[2],
+							ceiling((ylim[2]+0.05*ylim[2])*10^digits$coef)/10^digits$coef
+					),
+					log=F,
+					nint=10
+			
+			)
+			yaxp = c(axis_ticks[1],tail(axis_ticks, n=1),length(axis_ticks)-1)
+			ylim <- c(axis_ticks[1],tail(axis_ticks, n=1))
+		}else{
+			if(equal.axis){
+				if(!is.null(xlim)){
+					yaxp <- xaxp
+					ylim <- xlim
+				}
+			}
+		}
+	}else{
+		if(!is.null(ylim)){
+			# If <axp is set, fit the <lim to xaxp
+			# but just in case, it was not delivered and was taken from data
+			
+			# Check if taken from data
+			if((ylim[1]==yrange[1] && ylim[2]==yrange[2]) | (tmp.range[1]==ylim[1] && tmp.range[2]==ylim[2])){
+				ylim <- c(yaxp[1],yaxp[2])
+			}
+		}else{
+			warning("yaxp should never be set without ylim")
+			yaxp <- NULL
+			
+		}
+	}
+	
+	if(equal.axis){
+		
+		if(is.null(ylim)){
+			
+			yaxp <- xaxp
+			ylim <- xlim
+		}
+		if(is.null(xlim)){
+			xaxp<-yaxp
+			xlim <- ylim
+		}
+	}
+	# Fit Ranges to limits
+	if(!is.null(xlim)){
+		
+		if(xlim[1]<tmp.range[1]){
+			tmp.range[1] <- xlim[1]
+		}
+		if(xlim[2]>tmp.range[2]){
+			tmp.range[2] <- xlim[2]
+		}
+	}
+	
+	if(!is.null(ylim)){
+		
+		if(ylim[1]<yrange[1]){
+			yrange[1] <- ylim[1]
+		}
+		
+		if(ylim[2]>yrange[2]){
+			yrange[2] <- ylim[2]
+		}
+	}
+	
 	xd <- seq(rx[1],rx[2],length.out=xn)
 	xd <- union(xd, rx)
-	  
-    ## additional points outer range for nice bounds
+	
+	## additional points outer range for nice bounds
 	delta <- abs(rx[1]-rx[2])/xn
 	xd <- xd[order(xd)]
 	xd.add <- c(xd[1]-delta*1:10, xd, xd[length(xd)]+delta*1:10)
-		
+	
 	if(is.null(xlim)) xlim <- rx
-  
-	tmp.range <- range(as.vector(x@data[,c("x","y")]), na.rm = TRUE)	
-
-	if(ci.area == TRUE | ci.border == TRUE)
-    {
-        bounds <- calcResponse(x,alpha=alpha,x.levels=xd)
-		bounds.add <- calcResponse(x,alpha=alpha,x.levels=xd.add)
-        
-		if(equal.axis==TRUE)
-        {
-			xd <- seq(tmp.range[1],tmp.range[2],length.out=xn)
+	
+	# Paint the confidence interval area
+	if(ci.area == TRUE | ci.border == TRUE){
+		bounds <- calcResponse(x, alpha=alpha, x.levels=xd)
+		bounds.add <- calcResponse(x, alpha=alpha, x.levels=xd.add)
+		
+		if(equal.axis == TRUE){
+			xd <- seq(tmp.range[1], tmp.range[2], length.out=xn)
 			xd <- union(xd, tmp.range)
-						
+			
 			## additional points outer range for nice bounds
 			delta <- abs(rx[1]-rx[2])/xn
 			xd <- xd[order(xd)]
 			xd.add <- c(xd[1]-delta*1:10, xd, xd[length(xd)]+delta*1:10)
 			
-			bounds <- calcResponse(x,alpha=alpha,x.levels=xd)
-			bounds.add <- calcResponse(x,alpha=alpha,x.levels=xd.add)
+			bounds <- calcResponse(x, alpha=alpha, x.levels=xd)
+			bounds.add <- calcResponse(x, alpha=alpha, x.levels=xd.add)
 			
 			yrange <- range(c(as.vector(x@data[,c("x","y")]),
-                            as.vector(bounds[,c("X","Y","Y.LCI","Y.UCI")])),
-                            na.rm=TRUE)		
+							as.vector(bounds[,c("X","Y","Y.LCI","Y.UCI")])),
+					na.rm=TRUE)		
+		}else{
+			yrange <- range(c(as.vector(x@data[,"y"]),
+							as.vector(bounds[,c("Y","Y.LCI","Y.UCI")])),
+					na.rm=TRUE)
 		}
-        else
-        {
-            yrange <- range(c(as.vector(x@data[,"y"]),
-                            as.vector(bounds[,c("Y","Y.LCI","Y.UCI")])),
-                            na.rm=TRUE)
-        }
-    } # end if(ci.area == TRUE | ci.border == TRUE) 
-    else
-    {
-        if(equal.axis==TRUE)
-            yrange <- tmp.range
-        else
-            yrange <- range(as.vector(x@data[,"y"]),na.rm=TRUE)
-    }    
-                     
-    if(equal.axis==TRUE)
-    {
-        if(is.null(ylim)) xlim <- ylim <- tmp.range
-        else xlim <- ylim
-  	}
-    else
-    {
-        if(is.null(xlim)) xlim <- rx
-        if(is.null(ylim)) ylim <- yrange
-    }		
+	}else{
+		if(equal.axis == TRUE){
+			yrange <- tmp.range
+		}else{
+			yrange <- range(as.vector(x@data[,"y"]),na.rm=TRUE)
+		}
+	}    
+	
+	if(equal.axis){
+		if(is.null(ylim)){
+			xlim <- ylim <- tmp.range
+		}else{
+			xlim <- ylim
+		}
+	}else{
+		if(is.null(xlim)) xlim <- rx
+		if(is.null(ylim)) ylim <- yrange
+	}		
+	
 	
 	if(is.null(main)) 
-        main <- paste(titname,"Fit")
-	   
-	if(!add)
-        plot(0,0,cex=0,ylim=ylim,xlim=xlim,xlab=x.lab,ylab=y.lab,main = main, sub="", bty="n", ...)
-        
-    else
-    {
-        sub <- ""
-        add.legend <- FALSE
+		main <- paste(titname,"Fit")
+	
+	
+	if(!add){
+		plot(0, 0, cex=0, ylim=ylim, xlim=xlim, xlab=x.lab, ylab=y.lab, main = main, sub="", xaxp=xaxp, yaxp=yaxp, bty="n", ...)
+		
+	}else{
+		sub <- ""
+		add.legend <- FALSE
 		add.grid <- FALSE
-    }
-  
- 	if(add.cor == TRUE)
-    {
-        cor.coef <- paste(round(cor(x@data[,"x"],x@data[,"y"],use="pairwise.complete.obs", method=cor.method),3))
-        if (cor.method == "pearson") cortext<- paste("Pearson's r = ",cor.coef, sep="")
-        if (cor.method == "kendall") cortext<- bquote(paste("Kendall's ", tau, " = ", .(cor.coef) , sep=""))
-        if (cor.method == "spearman") cortext <- bquote(paste("Spearman's ", rho, " = ",.(cor.coef), sep=""))
-        mtext(side=1,line=-2,cortext,adj=0.9,font=1)
 	}
-    
-    if(ci.area == TRUE | ci.border == TRUE)
-    {
-        if(ci.area == TRUE)
-        {
-            xxx <- c(xd.add,xd.add[order(xd.add,decreasing=TRUE)])
-            yy1<-c(as.vector(bounds.add[,"Y.LCI"]))
-            yy2<-c(as.vector(bounds.add[,"Y.UCI"]))
-            yyy <-c(yy1,yy2[order(xd.add,decreasing=TRUE)])
-            polygon(xxx,yyy,col=ci.area.col,border="white", lty=0)
-        } 
+	if(add.legend == TRUE){
+		if(identity == TRUE & reg == TRUE)
+		{
+			text2 <- "identity"
+			text1 <- paste(formatC(round(x@para["Intercept","EST"], digits = digits$coef), digits = digits$coef, format="f"),
+					" + ", 
+					formatC(round(x@para["Slope","EST"], digits = digits$coef), digits = digits$coef, format="f"),
+					" * ",x@mnames[1],sep="")
+			legend(legend.place, lwd=c(reg.lwd,identity.lwd), 
+					lty=c(reg.lty,identity.lty), col=c(reg.col,identity.col),
+					title = paste(titname,"Fit (n=",dim(x@data)[1],")", sep=""),
+					legend = c(text1,text2), box.lty="blank", cex=0.8, bg="white", inset=c(0.01,0.01))
+		}
+		
+		if(identity == TRUE & reg == FALSE){
+			text2 <- "identity"
+			legend(legend.place, lwd=identity.lwd, lty=identity.lty, col=identity.col,
+					title=paste(titname,"Fit (n=",dim(x@data)[1],")", sep=""),
+					legend=text2, box.lty="blank", cex=0.8, bg="white", inset=c(0.01,0.01))
+		}
+		
+		if(identity==FALSE & reg==TRUE){
+			text1 <- paste(formatC(round(x@para["Intercept","EST"], digits = digits$coef), digits = digits$coef, format="f"),"+",
+					formatC(round(x@para["Slope","EST"], digits = digits$coef), digits = digits$coef, format="f"),
+					"*", x@mnames[1], sep="")
+			legend(legend.place, lwd=c(2), col=c(reg.col),
+					title=paste(titname,"Fit (n=",dim(x@data)[1],")", sep=""),
+					legend=c(text1), box.lty="blank", cex=0.8, bg="white", inset=c(0.01,0.01))
+		}
+	}
+	
+	
+	if(ci.area == TRUE | ci.border == TRUE){
+		if(ci.area == TRUE){
+			xxx <- c(xd.add,xd.add[order(xd.add,decreasing = TRUE)])
+			yy1 <- c(as.vector(bounds.add[,"Y.LCI"]))
+			yy2 <- c(as.vector(bounds.add[,"Y.UCI"]))
+			yyy <- c(yy1,yy2[order(xd.add, decreasing=TRUE)])
+			polygon(xxx, yyy, col=ci.area.col, border="white", lty=0)
+		} 
 		
 		if(add.grid) grid()
 		
-        if(ci.border == TRUE)
-        {
-            points(xd.add,bounds.add[,"Y.LCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
-            points(xd.add,bounds.add[,"Y.UCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
-        }
-       
-        if(is.null(sub))
-        {
-            if(x@cimeth %in% c("bootstrap","nestedbootstrap"))
-                subtext <- paste("The ", 1-x@alpha,"-confidence bounds are calculated with the ",x@cimeth,"(",x@bootcimeth,") method.",sep="")
-            else if((x@regmeth=="PaBa")&(x@cimeth=="analytical"))
-                subtext <- ""
-            else 
-                subtext <- paste("The ", 1-x@alpha,"-confidence bounds are calculated with the ",x@cimeth," method.",sep="")
-        }
-        else subtext <- sub
-    }
-    else
-    {
+		if(ci.border == TRUE){
+			points(xd.add, bounds.add[,"Y.LCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
+			points(xd.add, bounds.add[,"Y.UCI"], lty=ci.border.lty, lwd=ci.border.lwd, type="l", col=ci.border.col)
+		}
+		
+		if(is.null(sub)){
+			if(x@cimeth %in% c("bootstrap","nestedbootstrap"))
+				subtext <- paste("The ", 1-x@alpha,"-confidence bounds are calculated with the ",x@cimeth,"(",x@bootcimeth,") method.",sep="")
+			else if((x@regmeth=="PaBa")&(x@cimeth=="analytical"))
+				subtext <- ""
+			else 
+				subtext <- paste("The ", 1-x@alpha,"-confidence bounds are calculated with the ",x@cimeth," method.",sep="")
+		}
+		else subtext <- sub
+	}else{
 		if(add.grid) grid()
-        subtext <- ifelse(is.null(sub),"",sub)
-    }
-   
-    if(draw.points == TRUE)  
-        points(x@data[,2:3], col=points.col, pch=points.pch, cex=points.cex, ...)
-    title(sub=subtext)
-
+		subtext <- ifelse(is.null(sub), "", sub)
+	}
+	if(add.cor == TRUE){
+		cor.coef <- paste(formatC(round(cor(x@data[,"x"],x@data[,"y"],use="pairwise.complete.obs", method=cor.method), digits = digits$cor), digits = digits$cor, format="f"))
+		if (cor.method == "pearson") cortext<- paste("Pearson's r = ",cor.coef, sep="")
+		if (cor.method == "kendall") cortext<- bquote(paste("Kendall's ", tau, " = ", .(cor.coef) , sep=""))
+		if (cor.method == "spearman") cortext <- bquote(paste("Spearman's ", rho, " = ",.(cor.coef), sep=""))
+		mtext(side=1, line=-2, cortext, adj=0.9, font=1)
+	}
+	
+	if(draw.points == TRUE){
+		points(x@data[,2:3], col=points.col, pch=points.pch, cex=points.cex, ...)
+	}
+	title(sub = subtext)
+	
 #-
-  
-    if(reg == TRUE)
-    {
-        b0 <- x@para["Intercept","EST"]
-        b1 <- x@para["Slope","EST"]
-        abline(b0, b1,,lty=reg.lty,lwd=reg.lwd,col=reg.col )
+	
+	if(reg == TRUE){
+		b0 <- x@para["Intercept","EST"]
+		b1 <- x@para["Slope","EST"]
+		abline(b0, b1, lty=reg.lty, lwd=reg.lwd, col=reg.col )
 	}
-    
-    if(identity == TRUE)   abline(0,1,lty=identity.lty,lwd=identity.lwd, col=identity.col)    
-	if(add.legend == TRUE)
-    {
-        if(identity==TRUE & reg==TRUE)
-        {
-            text2 <- "identity"
-            text1 <- paste(round(x@para["Intercept","EST"],2)," + ",round(x@para["Slope","EST"],2)," * ",x@mnames[1],sep="")
-            legend(legend.place,lwd=c(reg.lwd,identity.lwd),lty=c(reg.lty,identity.lty),col=c(reg.col,identity.col),
-                   title=paste(titname,"Fit (n=",dim(x@data)[1],")", sep=""),
-                   legend=c(text1,text2),box.lty="blank",cex=0.8,bg="white", inset=c(0.01,0.01))
-        }
-    
-        if(identity==TRUE & reg==FALSE)
-        {
-            text2 <- "identity"
-            legend(legend.place,lwd=identity.lwd,lty=identity.lty,col=identity.col,
-                    title=paste(titname,"Fit (n=",dim(x@data)[1],")", sep=""),
-        	          legend=text2,box.lty="blank",cex=0.8,bg="white", inset=c(0.01,0.01))
-        }
-    
-        if(identity==FALSE & reg==TRUE)
-        {
-            text1 <- paste(round(x@para["Intercept","EST"],2),"+",
-                           round(x@para["Slope","EST"],2),"*",x@mnames[1],sep="")
-            legend(legend.place,lwd=c(2),col=c(reg.col),
-                   title=paste(titname,"Fit (n=",dim(x@data)[1],")", sep=""),
-                   legend=c(text1),box.lty="blank",cex=0.8,bg="white",inset=c(0.01,0.01))
-        }
-    }
- 
+	
+	if(identity == TRUE){
+		abline(0, 1, lty=identity.lty, lwd=identity.lwd, col=identity.col)
+	}
+	
 	box()
-}                                                       
+}                                                     
 
 
 #' Plot Estimated Systematical Bias with Confidence Bounds
@@ -954,7 +1097,7 @@ MCResult.plot <- function(x,
 #' @param x object of class "MCResult".
 #' @param xn # number of poits for drawing of confidence bounds/area. 
 #' @param add logical value. If \code{add=TRUE}, the grafic will be drawn in current grafical window.
-#' @param prop a logical value. If \code{prop=TRUE} the proportional bias \eqn{ % bias(Xc) = [ Intercept + (Slope-1) * Xc ] / Xc} will be drawn.
+#' @param prop a logical value. If \code{prop=TRUE} the proportional bias \eqn{ \%bias(Xc) = [ Intercept + (Slope-1) * Xc ] / Xc} will be drawn.
 #' @param xlim limits of the x-axis. If \code{xlim=NULL} the x-limits will be calculated automatically.
 #' @param ylim limits of the y-axis. If \code{ylim=NULL} the y-limits will be calculated automatically.
 #' @param bias logical value. If \code{identity=TRUE} the bias line will be drawn. If ci.bounds=FALSE and ci.area=FALSE the bias line will be drawn always.
@@ -1069,13 +1212,19 @@ MCResult.plotBias<-function(x,
 	} else if(x@regmeth == "WLinReg")
     {
         titname<-"Weighted Linear Regression"
+   	} else if(x@regmeth == "TS")
+    {
+        titname<-"Theil-Sen Regression"
+	} else if(x@regmeth == "PBequi")
+    {
+        titname<-"Equivariant Passing-Bablok Regression"
     } else if(x@regmeth == "Deming")
     {
         titname<-"Deming Regression"
-    }  else if(x@regmeth == "WDeming")
+    } else if(x@regmeth == "WDeming")
     {
         titname<-"Weighted Deming Regression"
-    }  else   titname <- "Passing Bablok Regression"
+    } else   titname <- "Passing Bablok Regression"
     
 	if(x@regmeth %in% c("WDeming","PaBa", "PaBaLarge") & x@cimeth== "analytical" & (ci.area==TRUE | ci.border==TRUE))
     {
@@ -1187,12 +1336,12 @@ MCResult.plotBias<-function(x,
             if(zeroline == TRUE) abline(h=0,lty=zeroline.lty, col=zeroline.col, lwd=zeroline.lwd)
             title(sub = subtext)  
         } else {
-            if(zeroline == TRUE & is.null(ylim) & is.null(cut.point))   ylim <- range(c(b0+b1*xd-xd, 0)) 
+            if(zeroline == TRUE & is.null(ylim) & is.null(cut.point))   ylim <- range(c(b0+b1*xd-xd, 0),na.rm=T) 
             if(zeroline == TRUE & is.null(ylim) & !is.null(cut.point))  ylim <- range(c(b0+b1*xd-xd, 0,
-                                                                           calcBias(x, x.levels=cut.point, alpha=alpha)[,c("Bias","LCI","UCI")])) 
-            if(zeroline == FALSE & is.null(ylim) & is.null(cut.point))  ylim <- range(c(b0+b1*xd-xd)) 
+                                                                           calcBias(x, x.levels=cut.point, alpha=alpha)[,c("Bias","LCI","UCI")]),na.rm=T) 
+            if(zeroline == FALSE & is.null(ylim) & is.null(cut.point))  ylim <- range(c(b0+b1*xd-xd),na.rm=T) 
             if(zeroline == FALSE & is.null(ylim) & !is.null(cut.point)) ylim <- range(c(b0+b1*xd-xd, 
-                                                                           calcBias(x, x.levels=cut.point, alpha=alpha)[,c("Bias","LCI","UCI")])) 
+                                                                           calcBias(x, x.levels=cut.point, alpha=alpha)[,c("Bias","LCI","UCI")]),na.rm=T) 
       
             if (add == FALSE)
             {
@@ -1394,16 +1543,16 @@ MCResult.plotBias<-function(x,
         }
         else
         { 
-            if(zeroline == TRUE & is.null(ylim) & is.null(cut.point))   ylim <- range(c(100*(b0+b1*xd-xd)/xd, 0)) 
+            if(zeroline == TRUE & is.null(ylim) & is.null(cut.point))   ylim <- range(c(100*(b0+b1*xd-xd)/xd, 0),na.rm=T) 
             if(zeroline == TRUE & is.null(ylim) & !is.null(cut.point))  ylim <- range(c(100*(b0+b1*xd-xd)/xd, 0,
                                                                            calcBias(x, x.levels=cut.point, 
                                                                            alpha=alpha, type="proportional", 
-                                                                           percent=TRUE)[,c("Prop.bias(%)","LCI","UCI")])) 
+                                                                           percent=TRUE)[,c("Prop.bias(%)","LCI","UCI")]),na.rm=T) 
             if(zeroline == FALSE & is.null(ylim) & is.null(cut.point))  ylim <- range(100*(b0+b1*xd-xd)/xd) 
             if(zeroline == FALSE & is.null(ylim) & !is.null(cut.point)) ylim <- range(c(100*(b0+b1*xd-xd)/xd,
                                                                            calcBias(x, x.levels=cut.point, 
                                                                            alpha=alpha, type="proportional", 
-                                                                           percent=TRUE)[,c("Prop.bias(%)","LCI","UCI")]))
+                                                                           percent=TRUE)[,c("Prop.bias(%)","LCI","UCI")]),na.rm=T)
             if (add == FALSE)
             {
                 if (xlim.new[1]<0 & xlim.new[2]>0)
@@ -1456,8 +1605,9 @@ MCResult.plotBias<-function(x,
 #'
 #' @param .Object object of type "MCResult".
 #' @seealso \code{\link{getCoefficients}}, \code{\link{getRegmethod}}
-#' @aliases printSummary
-MCResult.printSummary<-function(.Object)
+#' @aliases printSummary summary
+#' 
+MCResult.printSummary <- function(.Object)
 {
     print("MCResult virtual function")
     return(NULL)
@@ -1524,6 +1674,10 @@ MCResult.plotResiduals<-function(.Object, res.type=c("optimized", "y", "x"),
 		    titname <- "Weighted Linear Regression"
         else if(.Object@regmeth == "Deming")
 		    titname <- "Deming Regression"
+  	    else if(.Object@regmeth == "TS")
+            titname<-"Theil-Sen Regression"
+	    else if(.Object@regmeth == "PBequi")
+            titname<-"Equivariant Passing-Bablok Regression"
         else if(.Object@regmeth == "WDeming")
             titname <- "Weighted Deming Regression"
         else

@@ -38,8 +38,8 @@ void FillBins(  int * pnSlots, int * posCor, double * pXVals, double * pYVals,
 int IndexOf(int nItems, int* pnSlots, int nSlots);
 double Tan(double x);
 int IndexOf(int nItems, int* pnSlots, int nSlots);
-double getMedianSlope(int index1, int index2, int NBins);
-double calcDiff(double x,double y) 
+double getMedianSlope(int index1, int index2, int NBins, int tanget);
+double calcDiff(double x, double y) 
 {
 	double dRes = x-y;
 	if(dRes == 0.) return 0.;
@@ -101,9 +101,10 @@ SEXP calcAngleMat(SEXP X, SEXP Y, SEXP posCor)
   pSlopeLower   ... (double)  pointer to a double, where the computed lower confidence bound of the slope CI will be stored
   pSlopeUpper   ... (double)  pointer to a double, where the computed upper confidence bound of the slope CI will be stored
   pCIundefined   ... (int)    pointer to an integer indicating errors computing the confidence interval for the slope
+  tangent		... (int)	  pointer to an integer indicating which slope measure to use (1 = tangent, otherwise = radians)
 */
 void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int * pNBins, double * pSlope,
-                    double * pQuantile, double * pSlopeLower, double * pSlopeUpper, int * pCIundefined)
+                    double * pQuantile, double * pSlopeLower, double * pSlopeUpper, int * pCIundefined, int * tangent)
 {
   bool LCLundef=false, UCLundef=false;                              /* indicate problems if set to TRUE */
   int *pBins;
@@ -118,7 +119,7 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
     pBins[i] = 0;
   FillBins( pBins, pPosCor, pX, pY, pNData, &NPos, &NPos2,          /* call workhorse-function */
             &NNeg, &NNeg2, &NRegular, &NAllItems, pNBins);
- 
+
   if(*pPosCor == 1)                                                 /* compute Bin-index of the offsetted median */
     Offset = NNeg + NNeg2;
   else
@@ -130,7 +131,7 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
   {
     Index1 = IndexOf( half,     pBins, *pNBins);                    
     Index2 = IndexOf( half + 1, pBins, *pNBins);
-    *pSlope = getMedianSlope(Index1, Index2, *pNBins);
+    *pSlope = getMedianSlope(Index1, Index2, *pNBins, *tangent);
   }
   else                                                              /* nValIndex2 is an odd number */ 
   {
@@ -151,7 +152,7 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
       LCLindex2 = IndexOf(nItems + 1, pBins, *pNBins);
 		  if( (LCLindex1 >= 0) && (LCLindex2 >= 0) )                /* IndexOf returns -1 if the index found is equal to NBins + 1 */
       {
-        *pSlopeLower = getMedianSlope(LCLindex1, LCLindex2, *pNBins);
+        *pSlopeLower = getMedianSlope(LCLindex1, LCLindex2, *pNBins, *tangent);
       }
       else
 		    LCLundef = true; 
@@ -176,7 +177,7 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
       UCLindex2 = IndexOf(nItems + 1, pBins, *pNBins);
 	    if( (UCLindex1 >= 0) && (UCLindex2 >= 0) )          /* IndexOf returns -1 if the index found is equal to NBins + 1 */
       {
-        *pSlopeUpper = getMedianSlope(UCLindex1, UCLindex2, *pNBins);
+        *pSlopeUpper = getMedianSlope(UCLindex1, UCLindex2, *pNBins, *tangent);
       }
 		  else
         UCLundef = true;
@@ -218,7 +219,7 @@ void FillBins(  int * pnSlots, int * posCor, double * pXVals, double * pYVals,
                 int * nData, int * nPos, int * nPos2, int * nNeg, int * nNeg2, 
                 int * nRegular, int * nAllItems, int * nSlots)
 {
-	double dx,dy,phi;
+  double dx,dy,phi;
   int Index;
   *nPos = *nPos2 = *nNeg = *nNeg2 = *nAllItems = *nRegular = 0;
 	for(int j = 0; j < *nData; j++)
@@ -310,27 +311,39 @@ double Tan(double x)
 	if(calcDiff(fabs(x), PI2) == 0.)
 	{
 		if(x > 0)
-    {
+		{
 			return INF;
-    }
+		}
 		else
-    {
+		{
 			return -INF;
-    }
+		}
 	}
 	return tan(x);
 }
+
+
 /*
   Function computes slope values for two indices according to the number of bins
   and averages both values. This is used for computing the median slope out of an even
-  number of slopes. Both slopes are avaraged on radians-scale, not until then, 
+  number of slopes. Both slopes are averaged on radians-scale, not until then, 
   the slope is computed back from this circle-measure!
 */
-double getMedianSlope(int index1, int index2, int NBins)
+double getMedianSlope(int index1, int index2, int NBins, int tangent)
 {
+  double Slope;
+
   double Slope1 = ((double)index1 / (NBins)) * PI - PI2;
   double Slope2 = ((double)index2 / (NBins)) * PI - PI2;
-  double Slope = (Slope1 + Slope2) / 2;
-  Slope = Tan(Slope);
+  
+  if(tangent == 1)
+  {
+	   Slope = (Tan(Slope1) + Tan(Slope2)) / 2;
+  }
+  else
+  {
+	  Slope = (Slope1 + Slope2) / 2;
+	  Slope = Tan(Slope);
+  }  
   return Slope;         
 }

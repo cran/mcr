@@ -92,7 +92,7 @@
 				<Bias>-9594.46739575279,-9594.73083513842,-9597.36522899472</Bias>
 				<BiasL>-929116.1678002,-929116.10303965,-929115.455444157</BiasL>
 				<BiasU>909927.233008695,909926.641369373,909920.724986167</BiasU></ReferenceResults></Algorithm>
-				<Algorithm>
+        <Algorithm>
 		<Name>WDeming.121</Name>
 			<Parameter>
 				<RegMethod>WDeming</RegMethod>
@@ -135,5 +135,61 @@
 				<Slope>0.991593</Slope>
 				<SlopeL>0.884028</SlopeL>
 				<SlopeU>1.123731</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>PBequi-small</Name>
+			<Parameter>
+				<RegMethod>PBequi</RegMethod>
+				<CIMethod>analytical</CIMethod>
+				<methodlarge>FALSE</methodlarge>
+			</Parameter>
+			<ReferenceResults>
+				<Intercept>-244854.969408333</Intercept>
+				<InterceptL>-2807755.46346159</InterceptL>
+				<InterceptU>2318045.52464493</InterceptU>
+				<Slope>0.991592719686709</Slope>
+				<SlopeL>0.874504920068688</SlopeL>
+                <SlopeU>1.10868051930473</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>PBequi-large</Name>
+			<Parameter>
+				<RegMethod>PBequi</RegMethod>
+				<CIMethod>analytical</CIMethod>
+				<methodlarge>TRUE</methodlarge>
+			</Parameter>
+			<ReferenceResults>
+				<Intercept>-244854.969408334</Intercept>
+				<InterceptL>-2807979.20927967</InterceptL>
+				<InterceptU>2318269.27046301</InterceptU>
+				<Slope>0.991592719686709</Slope>
+				<SlopeL>0.874488352226766</SlopeL>
+                <SlopeU>1.10869708714665</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>Teil-Sen-small</Name>
+			<Parameter>
+				<RegMethod>TS</RegMethod>
+				<CIMethod>analytical</CIMethod>
+                <methodlarge>FALSE</methodlarge>
+			</Parameter>
+			<ReferenceResults>
+				<Intercept>629913.954426358</Intercept>
+				<InterceptL>-1366666.85822969</InterceptL>
+				<InterceptU>2626494.7670824</InterceptU>
+				<Slope>0.936547814163375</Slope>
+				<SlopeL>0.837020929701995</SlopeL>
+                <SlopeU>1.03607469862476</SlopeU></ReferenceResults></Algorithm>
+		<Algorithm>
+        <Name>Teil-Sen-large</Name>
+        <Parameter>
+            <RegMethod>TS</RegMethod>
+            <CIMethod>analytical</CIMethod>
+            <methodlarge>TRUE</methodlarge>
+        </Parameter>
+        <ReferenceResults>
+            <Intercept>629913.954426378</Intercept>
+            <InterceptL>-1353502.53279251</InterceptL>
+            <InterceptU>2613330.44164522</InterceptU>
+            <Slope>0.936547814163375</Slope>
+            <SlopeL>0.837569720037925</SlopeL>
+            <SlopeU>1.03552590828883</SlopeU></ReferenceResults></Algorithm>
 		</TestAlgorithms></RDx_TestCase_MethodComparison>
 		

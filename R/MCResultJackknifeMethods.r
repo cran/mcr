@@ -51,7 +51,7 @@ newMCResultJackknife <- function(   wdata, para, sample.names=NULL, method.names
     stopifnot(is.matrix(para))
     stopifnot(all(dim(para)==c(2,4)))
     stopifnot(is.character(regmeth))
-    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","PaBa","WDeming", "PaBaLarge")))
+    stopifnot(is.element(regmeth,c("LinReg","WLinReg","Deming","PaBa","WDeming", "PaBaLarge","PBequi","TS")))
     stopifnot(is.character(cimeth))
     stopifnot(cimeth=="jackknife")
     stopifnot(is.numeric(alpha))
@@ -108,7 +108,7 @@ newMCResultJackknife <- function(   wdata, para, sample.names=NULL, method.names
 #' @param regmeth string specifying the regression-method 
 #' @param cimeth string specifying the confidence interval method
 #' @param error.ratio for deming regression 
-#' @param alpha value specifying the 100(1-alpha)% confidence-level
+#' @param alpha value specifying the 100(1-alpha)\% confidence-level
 #' @param glob.coef global coefficients
 #' @param B0jack jackknife intercepts
 #' @param B1jack jackknife slopes
@@ -324,7 +324,11 @@ MCResultJackknife.printSummary<-function(.Object)
         regtext <- "Linear Regression"
     if(regmeth=="WLinReg") 
         regtext <- "Weighted Linear Regression"
-    if(regmeth=="Deming") 
+   if(regmeth=="TS") 
+        regtext <- "Theil-Sen Regression"
+  if(regmeth=="PBequi") 
+        regtext <- "Equivariant Passing-Bablok Regression"
+   if(regmeth=="Deming") 
         regtext <- "Deming Regression"
     if(regmeth=="WDeming") 
         regtext <- "Weighted Deming Regression"

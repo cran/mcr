@@ -44,3 +44,8 @@ setMethod(f="initialize",signature="MCResultAnalytical",definition=MCResultAnaly
 setMethod("calcResponse",signature=c(.Object="MCResultAnalytical"),definition=MCResultAnalytical.calcResponse)
 
 setMethod(f="printSummary",signature=c(.Object="MCResultAnalytical"),definition=MCResultAnalytical.printSummary)
+
+setMethod("summary", signature = c(object="MCResultAnalytical"), 
+			definition = function(object, ...){
+					MCResultAnalytical.printSummary(object)
+					})

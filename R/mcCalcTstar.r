@@ -97,6 +97,10 @@ mc.calcTstar <- function(.Object, x.levels, iter.max=30, threshold = 0.000001)
       		callfun.reg <- function(idx){ mc.linreg(X[idx],Y[idx]) } 	
         else if(regmeth == "WLinReg")
             callfun.reg <- function(idx){ mc.wlinreg(X[idx],Y[idx]) } 
+        else if(regmeth == "PBequi")
+            callfun.reg <- function(idx){ mc.PBequi(X[idx],Y[idx],method.reg="PBequi",calcCI=F) } 
+        else if(regmeth == "TS")
+            callfun.reg <- function(idx){ mc.PBequi(X[idx],Y[idx],method.reg="TS",calcCI=F) } 
         else if (regmeth == "Deming")
       		callfun.reg <- function(idx){ mc.deming(X[idx],Y[idx],error.ratio=error.ratio) } 
         else if (regmeth == "WDeming")

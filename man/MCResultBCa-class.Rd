@@ -4,6 +4,7 @@
 \alias{MCResultBCa-class}
 \alias{calcResponse,MCResultBCa-method}
 \alias{printSummary,MCResultBCa-method}
+\alias{summary,MCResultBCa-method}
 
 \title{Class \code{"MCResultBCa"}}
 \description{
@@ -48,12 +49,14 @@ Class \code{"\linkS4class{MCResult}"}, by class "MCResultJackknife", distance 2.
   \describe{
     \item{calcResponse}{\code{signature(.Object = "MCResultBCa")}: ... }
     \item{printSummary}{\code{signature(.Object = "MCResultBCa")}: ... }
+	\item{summary}{\code{signature(.Object = "MCResultBCa")}: ... }
 	 }
 }
 \author{
 Ekaterina Manuilova \email{ekaterina.manuilova@roche.com}, 
 Andre Schuetzenmeister \email{andre.schuetzenmeister@roche.com}, 
-Fabian Model \email{fabian.model@roche.com}
+Fabian Model \email{fabian.model@roche.com},
+Sergej Potapov \email{sergej.potapov@roche.com}
 }
 \examples{
 showClass("MCResultBCa")

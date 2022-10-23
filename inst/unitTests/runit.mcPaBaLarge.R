@@ -72,3 +72,35 @@ for( i in 1:length(testcases))
     assign( Fname, cloneLocalArgs(testcases[[i]], TCnames[i], TCnames[i] %in% c("part_1_dataset_2", "part_1_dataset_12")) )
 }
 
+
+test.PaBaLarge.angle1 <- function()
+{
+	data(creatinine)
+	crea <- na.omit(creatinine)
+	
+	fit.PaBa.radian  		<- mcreg(crea[,1], crea[,2], method.reg="PaBa", 	 slope.measure="radian",  rng.seed=331, method.ci="analytical")
+	fit.PaBa.tangent 		<- mcreg(crea[,1], crea[,2], method.reg="PaBa", 	 slope.measure="tangent", rng.seed=420, method.ci="analytical")
+	                                                                                                      
+	fit.PaBaLarge.radian  	<- mcreg(crea[,1], crea[,2], method.reg="PaBaLarge", slope.measure="radian",  rng.seed=331, NBins=1e8, method.ci="analytical")
+	fit.PaBaLarge.tangent 	<- mcreg(crea[,1], crea[,2], method.reg="PaBaLarge", slope.measure="tangent", rng.seed=420, NBins=1e8, method.ci="analytical")
+	
+	checkEquals(fit.PaBa.radian@para[,"EST"],  fit.PaBaLarge.radian@para[,"EST"],  tol=1e-7)
+	checkEquals(fit.PaBa.tangent@para[,"EST"], fit.PaBaLarge.tangent@para[,"EST"], tol=1e-7)
+	
+	# pathological example from the mcreg-Rdoc
+	
+	x1 <- 1:10
+	y1 <- 0.5*x1
+	x <- c(x1,y1)
+	y <- c(y1,x1)
+	
+	m1 <- mcreg(x,y,method.reg="PaBa",method.ci="analytical",slope.measure="radian")
+	m2 <- mcreg(x,y,method.reg="PaBa",method.ci="analytical",slope.measure="tangent")
+	
+	m1.2 <- mcreg(x,y,method.reg="PaBaLarge",method.ci="analytical",slope.measure="radian",  NBins=1e8)
+	m2.2 <- mcreg(x,y,method.reg="PaBaLarge",method.ci="analytical",slope.measure="tangent", NBins=1e8)
+	
+	checkEquals(m1@para[,"EST"], m1.2@para[,"EST"], tol=1e-7)
+	checkEquals(m2@para[,"EST"], m2.2@para[,"EST"], tol=1e-7)
+}
+

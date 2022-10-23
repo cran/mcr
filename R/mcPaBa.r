@@ -90,165 +90,89 @@ mc.calcAngleMat <- function(X,Y,posCor=TRUE)
 
 #' Passing-Bablok Regression
 #'
-#' @param angM upper triangular matrix of slopes for all point combinations. Slopes in radian.
+#' @param angM upper triangular matrix of slopes for all point combinations (optional). Slopes in radian.
 #' @param X measurement values of reference method
 #' @param Y measurement values of test method
-#' @param alpha numeric value specifying the 100(1-alpha)% confidence level
+#' @param alpha numeric value specifying the 100(1-alpha)\% confidence level
 #' @param posCor should algorithm assume positive correlation, i.e. symmetry around slope 1?
 #' @param calcCI should confidence intervals be computed?
 #' @param slope.measure angular measure of pairwise slopes  (see \code{\link{mcreg}} for details).\cr   
 #'          \code{"radian"} - for data sets with even sample numbers median slope is calculated as average of two central slope angles.\cr
 #'          \code{"tangent"} - for data sets with even sample numbers median slope is calculated as average of two central slopes (tan(angle)).\cr
 #' @return Matrix of estimates and confidence intervals for intercept and slope. No standard errors provided by this algorithm.  
-mc.paba <- function(angM, X, Y, alpha=0.05, posCor=TRUE, calcCI=TRUE, slope.measure=c("radian","tangent")) 
+
+
+mc.paba <- function(angM = NULL, X, Y, alpha = 0.05, posCor = TRUE, 
+					calcCI = TRUE, slope.measure = c("radian", "tangent")) 
 {
 	## Check validity of parameters
-    stopifnot(nrow(angM)==ncol(angM))
-    stopifnot(length(X)==length(Y))
-    stopifnot(length(X)==nrow(angM))
-    stopifnot(!is.na(posCor))
-	
-	## Setup
-	nData <- nrow(angM)
-	## Valid mini slopes
-	nAllItems <- sum(!is.na(angM))
-	## Borderline cases at -Pi/4 or Pi/4
-	nNeg <- sum(angM<=(-pi/4),na.rm=T) # nNeg = slopes <= -1 
-	nNeg2 <- sum(angM<(-pi/4),na.rm=T) # nNeg2 = slopes < -1
-	nPos <- sum(angM>=(pi/4),na.rm=T)
-	nPos2 <- sum(angM>(pi/4),na.rm=T)
-	
-	##
-	## Slope
-	##
-	## offset depending on correlation
-	## for BaPa offset all with slope < -1 (slope > 1 if neg)
-	## because we have also added the slopes = +/- 1 to the array
-	## we have to add to the offset also half of the number of the slopes +/-.
-	## the function returns twice of this offset so
-	## offset = 2*(nNeg2 + (nNeg-nNeg2)/2) = nNeg + nNeg2
-	if(posCor) 
-        nOffset2 <- nNeg+nNeg2
-	else 
-        nOffset2 <- -nPos-nPos2
-	## Two times index of median
-	nValIndex2 <- nAllItems + nOffset2	
-	## Sort and select median (NAs are dropped)
-	half <- (nValIndex2+1L)%/%2L
-    
-    ## Extreme case half==0 can happen and results in invalid index => simply shift by 1
-    if(half==0) half <- 1
-
-    ## Shifted median should always be valid data index
-    stopifnot(half<=nAllItems & half>0)
-
-    ## Extreme case half==nAllItems can happen, for even nAllItems equation for b in PaBa paper
-    ## then undefined since second index out of bounds => simply calculate b as in odd nAllItems case
-	if((nValIndex2%%2L == 1L) || (half==nAllItems)) 
-    {
-		if(calcCI) 
-            sortedM <- sort(angM) # complete sorting
-		else 
-            sortedM <- sort(angM,partial=half) # only partial sorting
-		slope <- sortedM[half]
-	} 
-	else 
-    {
-		if(calcCI) 
-            sortedM <- sort(angM) # complete sorting
-		else 
-            sortedM <- sort(angM,partial=half+0L:1L) # only partial sorting
-        
-        
-        if(slope.measure=="radian") slope <- mean(sortedM[half+0L:1L])
-        else slope <- atan(mean(tan(sortedM[half+0L:1L]))) # slope.measure = tangent
+	slope.measure <- match.arg(slope.measure)
+    stopifnot(length(X) == length(Y))
+	stopifnot(is.numeric(X))
+	stopifnot(is.numeric(Y))
+    stopifnot(is.logical(posCor))
+	if(slope.measure == "radian"){
+		slope.measure <- 0
+	}else if(slope.measure == "tangent"){
+		slope.measure <- 1
+	}else{
+		stop(" slope.measure must be one of 'radian' or 'tangent'. \n")
 	}
-	mcres.slope <- tan(slope)
+	parallel <- options()$parallel
+	if(!is.null(parallel) && parallel == TRUE){
+		Ncpu <- detectCores()/2
+	}else{
+		Ncpu <- 1
+	}
+	
+	######################################################
+	###  call C-function
+	nX <- length(X)
+	intercept <- slope <- 0
+	seSlope <- seIntercept <- c(0,0)
+	
+	model.paba <- .C("calc_PaBa", 
+					X = as.numeric(X), Y = as.numeric(Y), N = as.integer(nX), 
+					intercept = as.numeric(intercept), slope = as.numeric(slope), 
+					seIntercept = as.numeric(seIntercept), seSlope = as.numeric(seSlope), 
+					pQuantile = as.numeric(qnorm(1-alpha/2)), pCor = as.integer(posCor), 
+					tangent = as.integer(slope.measure), Ncpu = as.integer(Ncpu),
+					PACKAGE="mcr")
 	
     ##
 	## Confidence intervals for slope
 	##
-	if(calcCI) 
-    {
-		dConf <- qnorm(1-alpha/2)*sqrt(nData*(nData-1)*(2*nData+5)/18)
-		## Lower CI
-		## NOTE: Difference to original Passing & Bablok paper, there (nAllItems-dConf)/2 is rounded.
-		##       No averaging in case of even indices is performed. Here we calculate the quantile in analogy
-		##       to the median, which seems more accurate.
-		nInd <- round(nAllItems-dConf+nOffset2)
-		if(posCor) 
-            LowestIdx <-  2*(nNeg-nNeg2)+1
-		else 
-            LowestIdx <-  2*(nPos-nPos2)+1
-		if(nInd < LowestIdx) 
-            mcres.slopeL = -Inf
-		else 
-        {
-			half <- (nInd+1L)%/%2L
-			if(nInd%%2L == 1L) 
-                slope <- sortedM[half]
-			else {
-                if(slope.measure=="radian") slope <- mean(sortedM[half+0L:1L])
-                else slope <- atan(mean(tan(sortedM[half+0L:1L]))) # slope.measure = tangent
-            }
-                
-			mcres.slopeL = tan(slope)
+	if(calcCI){
+		if(is.na(model.paba$seIntercept[1])){
+			model.paba$seIntercept[1] <- -Inf
 		}
-		## Upper CI	
-		nInd  <- round(nAllItems+dConf+nOffset2)
-		if(nInd > 2*nAllItems-1) 
-            mcres.slopeU <- Inf
-		else 
-        {
-			half <- (nInd+1L)%/%2L
-			if(nInd%%2L == 1L) 
-                slope <- sortedM[half]
-            else {
-                if(slope.measure=="radian") slope <- mean(sortedM[half+0L:1L])
-                else slope <- atan(mean(tan(sortedM[half+0L:1L]))) # slope.measure = tangent
-            }
-            mcres.slopeU = tan(slope)
+		if(is.na(model.paba$seIntercept[2])){
+			model.paba$seIntercept[2] <- Inf
 		}
-	}
-	else 
-    {
+		if(is.na(model.paba$seSlope[1])){
+			model.paba$seSlope[1] <- -Inf
+		}
+		if(is.na(model.paba$seSlope[2])){
+			model.paba$seSlope[2] <- Inf
+		}
+	}else{
 		## No theoretical CIs computed, use resampling to get CIs
-		mcres.slopeL <- as.numeric(NA)
-		mcres.slopeU <- as.numeric(NA)
+		model.paba$seSlope[1:2] <- as.numeric(NA)
+		model.paba$seIntercept[1:2] <- as.numeric(NA)
 	}
 	
-	##
-	## Intercept
-	##
-	mcres.intercept <- median(calcDiff(Y,mcres.slope*X))
-	if(calcCI) 
-    {
-		if(mcres.slopeL==-Inf) 
-            mcres.interceptL <- -Inf
-		else 
-            mcres.interceptL <- median(calcDiff(Y,mcres.slopeU*X))
-        
-		if(mcres.slopeU==Inf) 
-            mcres.interceptU <- Inf
-		else 
-            mcres.interceptU <- median(calcDiff(Y,mcres.slopeL*X))
-	}
-	else 
-    {
-		mcres.interceptL <- as.numeric(NA)
-		mcres.interceptU <- as.numeric(NA)
-	}
-	
+	######################################################
 	## Prepare result matrix
+	
 	rmat <- matrix(nrow=2,ncol=4)
 	rownames(rmat) <- c("Intercept","Slope")
 	colnames(rmat) <- c("EST","SE","LCI","UCI")
-	rmat[,1] <- c(mcres.intercept,mcres.slope)
+	rmat[,1] <- c(model.paba$intercept, model.paba$slope)
 	rmat[,2] <- NA
-	rmat["Intercept","LCI"] <- mcres.interceptL
-	rmat["Intercept","UCI"] <- mcres.interceptU
-	rmat["Slope","LCI"] <- mcres.slopeL
-	rmat["Slope","UCI"] <- mcres.slopeU
+	rmat["Intercept","LCI"] <- model.paba$seIntercept[1]
+	rmat["Intercept","UCI"] <- model.paba$seIntercept[2]
+	rmat["Slope","LCI"] <- model.paba$seSlope[1]
+	rmat["Slope","UCI"] <- model.paba$seSlope[2]
 	return(rmat)
 }
 	

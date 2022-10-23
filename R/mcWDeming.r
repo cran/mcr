@@ -44,10 +44,9 @@
 #'              Linnet K.
 #'              Estimation of the Linear Relationship between the Measurements of two Methods with Proportional Errors.
 #'              STATISTICS IN MEDICINE, Vol. 9, 1463-1473 (1990).
-mc.wdemingConstCV <- function(X, Y, error.ratio, iter.max=30, threshold=0.000001)
+mc.wdemingConstCV <- function(X, Y, error.ratio, iter.max = 30, threshold = 0.000001)
 {
-  # Check validity of parameters
-  
+	# Check validity of parameters
     stopifnot(is.numeric(X))
     stopifnot(is.numeric(Y))
     stopifnot(length(X) == length(Y))
@@ -62,70 +61,41 @@ mc.wdemingConstCV <- function(X, Y, error.ratio, iter.max=30, threshold=0.000001
     # This algorithm often doesn't converge if there are negative
     # measurements in data set
   
-    if (min(X)<0 | min(Y)<0)
-    {
+    if (min(X) < 0 | min(Y) < 0){
         return(paste("There are negative values in data set."))
-    }
-    else
-    {
-        # 1. Calculate  initial values
-        #    (point estimates of unweighted deming regression)
-
-        n <- length(X)
-      	
-      	mX <- mean(X)
-      	mY <- mean(Y)
-      	u <- sum((X-mX)^2)
-      	q <- sum((Y-mY)^2)
-      	p <- sum((X-mX)*(Y-mY))
-      	
-      	## initial values
-      	
-      	b1 <- ((error.ratio*q-u)+sqrt((u-error.ratio*q)^2+4*error.ratio*p^2))/(2*error.ratio*p)
-      	b0 <- mean(Y)-b1*mean(X)
-      	
-        ## Iterative Algorithm
-    
-        i <- 0     # Number of iterations
-        warn<-"no warnings"   # Warnings
-      
-        repeat
-        {
-            if (i >= iter.max) 
-            {
-                warning(paste("no konvergence after",iter.max,"iterations"))
-                break
-            }
-        
-            i<-i+1
-          
-            # Calculation of weights
-            d <- Y-(b0+b1*X)
-            XHAT <- X+(error.ratio*b1*d/(1+error.ratio*b1^2))
-            YHAT <- Y-(d/(1+error.ratio*b1^2))
-            W <- ((XHAT+error.ratio*YHAT)/(1+error.ratio))^(-2)
-    
-            # Calculation of regression coefficients
-            XW <- sum(W*X)/sum(W)
-            YW <- sum(W*Y)/sum(W)
-            U <- sum(W*((X-XW)^2))
-            Q <- sum(W*((Y-YW)^2))
-            P <- sum(W*(X-XW)*(Y-YW))
-              
-            # Point estimates
-            B1 <- (error.ratio*Q-U+sqrt((U-error.ratio*Q)^2+4*error.ratio*P^2))/(2*error.ratio*P)
-            B0 <- YW-B1*XW
-          
-            # Stop condition
-            if(abs(b1-B1) < threshold & abs(b0-B0) < threshold) 
-                break
-    
-            # new values
-            b1<-B1
-            b0<-B0
-        } # end of iterative algorithm
+    }else{
+		######################################################
+		###  call C-function
+		intercept <- slope <- seIntercept <- seSlope <- 0
+		xw <- 0
+		maxit <- iter.max
+		nX <- length(X)
 		
-        return(list(b1=B1,b0=B0,iter=i,xw=XW, weight=W))
+		### mode = 0 - Deming regression
+		### mode = 1 - WDeming regression
+		mode <- 1
+		W <- rep(1, nX)
+		
+		model.Deming <- .C("calc_Deming", 
+							x = as.numeric(X), y = as.numeric(Y), 
+							n = as.integer(nX), 
+							error_ratio = as.numeric(error.ratio), 
+							intercept = as.numeric(intercept), 
+							slope = as.numeric(slope), 
+							seIntercept = as.numeric(seIntercept), 
+							seSlope = as.numeric(seSlope), 
+							mode = as.integer(mode), 
+							maxit = as.integer(iter.max), 
+							threshold = as.numeric(threshold), 
+							W = as.numeric(W), 
+							xw = as.numeric(xw), 
+							PACKAGE="mcr")
+		if (model.Deming$maxit >= maxit) {
+			warning(paste("no konvergence after", maxit, "iterations"))
+		}
+		list(b1 = model.Deming$slope, b0 = model.Deming$intercept,
+				iter = model.Deming$maxit,
+				xw = model.Deming$xw,  weight = model.Deming$W)
     }
 }
 

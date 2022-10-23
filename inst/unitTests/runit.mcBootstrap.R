@@ -111,7 +111,8 @@ test.mcBootstrap.call <- function()
     set.seed(42)
     obj.mc.bs.pb <- mcr:::mc.bootstrap(method.reg="PaBa", X=crea.data[,1], Y=crea.data[,2], jackknife=FALSE, bootstrap="bootstrap", nsamples=100, error.ratio=1)
     checkEquals(obj.mc.bs.pb$glob.coef, c(-0.184623847841471, 1.157751706128444))
-    checkEquals(obj.mc.bs.pb$B0[smpls], c(-0.19373417721519, -0.127139984000515, -0.246613402933132, -0.163472457210465, -0.22, -0.198636363636364, -0.145384615384615, -0.167272727272727, -0.161269841269841, -0.251594202898551))
+    checkEquals(obj.mc.bs.pb$B0[smpls], c(-0.19373417721519, -0.127139984000515, -0.246613402933132, -0.163472457210465, -0.22, -0.198636363636364, -0.145384615384615, -0.167272727272727, -0.161269841269841, -0.251594202898551)
+)
     checkEquals(obj.mc.bs.pb$MX[smpls], c(1.23266666666667, 1.36466666666667, 1.18366666666667, 1.18133333333333, 1.14133333333333, 1.177, 1.25833333333333, 1.26633333333333, 1.23766666666667, 1.27066666666667))
     checkEquals(obj.mc.bs.pb$cimeth, "bootstrap")
     
@@ -121,6 +122,41 @@ test.mcBootstrap.call <- function()
     checkEquals(obj.mc.nbs.pb$B0[smpls], c(-0.140882352941176, -0.193951612903226, -0.209460217580462, -0.134941520467837, -0.145833333333333, -0.172857142857143, -0.271683168316832, -0.134941520467837, -0.220769230769231, -0.171578947368421))
     checkEquals(obj.mc.nbs.pb$sigmaB1[smpls], c(0.0962574390955512, 0.0713521702605754, 0.054047154373797, 0.034149540914331, 0.0194428549936299, 0.0621111889553757, 0.0853939447603508, 0.051585238550563, 0.038646889179085, 0.0692536020998787))
     checkEquals(obj.mc.nbs.pb$cimeth, "nestedbootstrap")
+
+
+
+    # equivariant Passing-Bablok
+    
+    set.seed(42)
+    obj.mc.bs.pbe <- mcr:::mc.bootstrap(method.reg="PBequi", X=crea.data[,1], Y=crea.data[,2], jackknife=FALSE, bootstrap="bootstrap", nsamples=100, error.ratio=1)
+    checkEquals(obj.mc.bs.pbe$glob.coef,c(-0.172857142857143, 1.14285714285714) )
+    checkEquals(obj.mc.bs.pbe$B0[smpls], c(-0.19373417721519, -0.127139984000515, -0.232530120481927, -0.140454545454545, -0.212187499999999, -0.198636363636364, -0.139054054054054, -0.15324101677211, -0.161269841269841, -0.251594202898551))
+
+    checkEquals(as.numeric(obj.mc.bs.pbe$MX)[smpls], c(0.973848239594909, 1.09870657701093, 0.977798420135439, 1.04408203593734, 0.933056396966334, 0.962389930208207, 0.956729689639001, 1.22546033661913, 0.991511744823403, 0.875524435138653))
+    checkEquals(obj.mc.bs.pbe$cimeth, "bootstrap")
+    
+    set.seed(42)
+    obj.mc.nbs.pbe <- mcr:::mc.bootstrap(method.reg="PBequi", X=crea.data[,1], Y=crea.data[,2], jackknife=FALSE, bootstrap="nestedbootstrap", nsamples=100, nnested=10, error.ratio=1)
+    checkEquals(obj.mc.nbs.pbe$glob.coef, c(-0.172857142857143, 1.14285714285714))
+    checkEquals(obj.mc.nbs.pbe$B0[smpls], c(-0.138846153846154, -0.193670886075949, -0.208181818181818, -0.134941520467837, -0.145833333333333, -0.172857142857143, -0.271683168316832, -0.133461538461538, -0.219674796747967, -0.166285714285714))
+    checkEquals(obj.mc.nbs.pbe$sigmaB1[smpls], c(0.0930150241241372, 0.0663936994933717, 0.0666159333264363, 0.0341474291486634, 0.0194428549936299, 0.0614412732290478, 0.0771568306169527, 0.049442291754606, 0.03449838673032, 0.069950917988774))
+    checkEquals(obj.mc.nbs.pbe$cimeth, "nestedbootstrap")
+    
+    # Theil-Sen
+    
+    set.seed(42)
+    obj.mc.bs.ts <- mcr:::mc.bootstrap(method.reg="TS", X=crea.data[,1], Y=crea.data[,2], jackknife=FALSE, bootstrap="bootstrap", nsamples=100, error.ratio=1)
+    checkEquals(obj.mc.bs.ts$glob.coef, c(-0.143624670636533, 1.10585401346397))
+    checkEquals(obj.mc.bs.ts$B0[smpls], c(-0.135588235294117, -0.0877192982456144, -0.197667747750547, -0.0300000000000005, -0.122368421052632, -0.149596411986228, -0.079782282488536, -0.0656410256410256, -0.127228915662651, -0.246966057955921))
+    checkEquals(as.numeric(obj.mc.bs.ts$MX)[smpls],c(0.729593777682774, 1.08901241012173, 1.03686329090126, 0.989177843621138, 1.03933980085566, 0.958974544924946, 1.29677637328945, 1.14302538801862, 1.02726206312302, 0.732009271533936))
+    checkEquals(obj.mc.bs.ts$cimeth, "bootstrap")
+    
+    set.seed(42)
+    obj.mc.nbs.ts <- mcr:::mc.bootstrap(method.reg="TS", X=crea.data[,1], Y=crea.data[,2], jackknife=FALSE, bootstrap="nestedbootstrap", nsamples=100, nnested=10, error.ratio=1)
+    checkEquals(obj.mc.nbs.ts$glob.coef, c(-0.143624670636533, 1.10585401346397)) 
+    checkEquals(obj.mc.nbs.ts$B0[smpls], c(-0.0672780546747951, -0.167272727272727, -0.15650406504065, -0.0937804878048779, -0.133731343283582, -0.141631721081988, -0.1956, -0.107819383259912, -0.175526315789474, -0.0916417910447762))
+    checkEquals(obj.mc.nbs.ts$sigmaB1[smpls], c(0.115863025774045, 0.0649149627437101, 0.0529712943526941, 0.0349773381795163, 0.0143344934822061, 0.063881247321439, 0.0779759876872044, 0.0456847819296532, 0.0389271635798369, 0.0742006985928895))
+    checkEquals(obj.mc.nbs.ts$cimeth, "nestedbootstrap")
 }
     
     

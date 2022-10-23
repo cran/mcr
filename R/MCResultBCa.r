@@ -85,7 +85,10 @@ setMethod("calcResponse",signature=c(.Object="MCResultBCa"),definition=MCResultB
 
 setMethod(f="printSummary",signature=c(.Object="MCResultBCa"),definition=MCResultBCa.printSummary)
 
-
+setMethod("summary", signature = c(object="MCResultBCa"), 
+			definition = function(object, ...){
+					MCResultBCa.printSummary(object)
+					})
 
 
 

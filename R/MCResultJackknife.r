@@ -66,3 +66,7 @@ setMethod("getJackknifeStatistics",signature=c(.Object="MCResultJackknife"),defi
 
 setMethod(f="printSummary",signature=c(.Object="MCResultJackknife"),definition=MCResultJackknife.printSummary)
 
+setMethod("summary", signature = c(object="MCResultJackknife"), 
+			definition = function(object, ...){
+					MCResultJackknife.printSummary(object)
+					})

@@ -20,7 +20,7 @@ genericMethCompTest <- function(xml.InputData,xml.Algo.Parameter,xml.Algo.RefRes
 
     # If a local equivalence precision is specified use this value instead of the value of 'equ.prec'.
     # This had to be added because the approximative Passing-Bablok algorithm (PaBaLarge) differs more
-    # from referencer esults than the exact algorithm (PaBa). PaBaLarge is tested against the exact
+    # from reference results than the exact algorithm (PaBa). PaBaLarge is tested against the exact
     # implementation using 34 testcases (see file "runit.PaBaLarge.R").
 
     if("LocalEquivalencePrecision" %in% names(xmlChildren(xml.Algo.Parameter)))
@@ -45,10 +45,15 @@ genericMethCompTest <- function(xml.InputData,xml.Algo.Parameter,xml.Algo.RefRes
 		bias.points <- as.numeric(strsplit(xmlValue(getNodeSet(xml.Algo.Parameter,"Bias")[[1]]),",",fixed=T)[[1]])
 	} 
     else bias.points <- NULL
+
+	if(length(getNodeSet(xml.Algo.Parameter,"methodlarge")) > 0) 
+    {
+		methodlarge <- as.logical(xmlValue(getNodeSet(xml.Algo.Parameter,"methodlarge")[[1]]))
+	} 
+    else methodlarge <- TRUE
 	
 	## Run regression
-	result <- mcreg(data.x,data.y,error.ratio=error.ratio,alpha=0.05,
-					method.reg=method.reg,method.ci=method.ci,method.bootstrap.ci="Student")
+	result <- mcreg(data.x,data.y,error.ratio=error.ratio,alpha=0.05, method.reg=method.reg,method.ci=method.ci,method.bootstrap.ci="Student",methodlarge=methodlarge)
 
 	## Compare results and reference
 	## Intercept
@@ -112,6 +117,7 @@ getTestFunction <- function(xml.InputData,xml.Algo.Parameter,xml.Algo.RefResults
 ##
 
 testFiles <- list.files(dir.xml,pattern="^MC_TestCase.*\\.xml$",full.names=TRUE)
+
 
 for (testFile in testFiles) {
 	xmltc <- xmlInternalTreeParse(file=testFile)

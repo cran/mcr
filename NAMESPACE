@@ -2,13 +2,20 @@ useDynLib(mcr, .registration=TRUE)
 
 ### imported generics and functions
 import(methods)
-importFrom("grDevices", "rgb")
-importFrom("graphics", "abline", "arrows", "box", "grid", "hist",
-             "layout", "legend", "mtext", "par", "points", "polygon",
-             "segments", "text", "title","plot")
-importFrom("stats", "complete.cases", "cor", "cor.test", "density",
-             "dt", "median", "pnorm", "qnorm", "qqplot", "qt",
-             "quantile", "rt", "sd")
+importFrom("robslopes","PassingBablok","TheilSen")
+importFrom("grDevices", "rgb","axisTicks")
+importFrom("utils","tail")
+importFrom("graphics", "abline", "arrows", "box", "grid", 
+			"hist", "layout", "legend", "mtext", "par", 
+			"points", "polygon", "segments", "text", "title")
+importFrom("stats", "complete.cases", "cor", "cor.test", 
+			"density", "dt", "median", "pnorm", "qnorm", 
+			"qqplot", "qt", "quantile", "rt", "sd")
+
+importFrom("parallel", "makeCluster", "detectCores", "clusterEvalQ", 
+			"clusterExport", "clusterApplyLB", "clusterSetRNGStream", 
+			"stopCluster")
+
 
 ### Generics and functions defined in this package
 export(
@@ -17,6 +24,7 @@ export(
 	"calcResponse",
 	"compareFit",
 	"getCoefficients",
+	"coef",
 	"getData",
 	"getErrorRatio",
 	"getWeights",
@@ -32,6 +40,7 @@ export(
 	"plotResiduals",
 	"plotwithRJIF",
 	"printSummary",
+	"summary",
 	"MCResult.calcBias",
 	"MCResult.calcCUSUM",
 	"MCResult.calcResponse",
@@ -72,6 +81,8 @@ export(
 	"MCResultResampling.plotBootstrapT",
 	"MCResultResampling.printSummary"
 )
+
+
 
 ### exported classes
 exportClasses(
