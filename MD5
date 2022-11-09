@@ -1,4 +1,4 @@
-5f7daf339a5dd0b03e9894aaa8eb1e4c *DESCRIPTION
+9707345a4d0d54ada7e6d04d200dfea7 *DESCRIPTION
 1f3661119a760d370f6b9b7ffc32353c *NAMESPACE
 f8925ca48ffb59e27e0f8329c60db6a1 *R/MCResult.r
 8eab489c07dfd35c95e47b856f816f74 *R/MCResultAnalytical.r
@@ -127,5 +127,5 @@ fd5c0f4e91ccf67a11fc10ddb21227ac *src/calcRegression.c
 f021954833077be45f51a38e1bdbc955 *src/calcRegression.h
 1f203c726d9969f193ea63a44bda0191 *src/init.c
 d2ccb1e29bce4e27bc8620b6593992f8 *src/utils.functions.c
-fd12bb3ea261486c2adae0fced5ea4bb *src/utils.functions.h
+436acce8e1169d91e82d5813d683f21c *src/utils.functions.h
 7cac60a46811d3866d795274323a8a7a *src/vartau.f

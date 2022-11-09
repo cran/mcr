@@ -3,7 +3,6 @@
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <omp.h>
 
 
 double quickselect(double *arr, int n, int k);
