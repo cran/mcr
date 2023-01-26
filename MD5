@@ -1,4 +1,4 @@
-9707345a4d0d54ada7e6d04d200dfea7 *DESCRIPTION
+110863044e45f814446d8ffff2f96467 *DESCRIPTION
 1f3661119a760d370f6b9b7ffc32353c *NAMESPACE
 f8925ca48ffb59e27e0f8329c60db6a1 *R/MCResult.r
 8eab489c07dfd35c95e47b856f816f74 *R/MCResultAnalytical.r
@@ -25,7 +25,7 @@ e10aa35a8028a74e6a077fceddb78cb5 *R/mcrIncludeLegend.r
 1fbc93d8510a3773e014d11f83aec917 *R/mcrMisc.r
 bef3c9631f57ab337508de01c6715ba4 *R/zzz.r
 94f171902f31055c44a071df5f75e1be *data/creatinine.RData
-fb6db5a594cf2d293e85eddbc5b1ff14 *inst/ChangeLog.txt
+55e83fcea8e20213e848020b78359a8f *inst/ChangeLog.txt
 a6b9150d88389a2792b560aa7e2e6547 *inst/RunRoxy.R
 d6fbb015709427e54d36128ef554dd3f *inst/unitTests/TestCaseCollection/MC_TestCase_AnaIT_TD13.xml
 c1a8d45798eff80c51c82129a5927e1c *inst/unitTests/TestCaseCollection/MC_TestCase_AnaIT_TD15.xml
@@ -47,7 +47,6 @@ fc811435645bde8f04716d7f31522671 *inst/unitTests/runit.mcPaBa.R
 b097c69d3fa4b3c810c2a5a83f05e4cf *inst/unitTests/runit.mcWDeming.R
 b388fd09f1e18376a73e861293a82869 *inst/unitTests/runit.mcrInterface.R
 4673cdbff74c067f58268b6786d1eca9 *inst/unitTests/runitMCReg.R
-2e6788e4d81f50141080499e72f25cec *inst/unitTests/testProtocol.html
 cd49063089492a743493e042d349ca6e *man/MCResult-class.Rd
 230c65dd163ea4df8e13944bc1c55410 *man/MCResult.calcBias.Rd
 d986de988b5eb1bf6c14cb861ab25f80 *man/MCResult.calcCUSUM.Rd
@@ -122,7 +121,7 @@ fdf8e49cfab18f158a4f76550697ddc8 *man/newMCResultAnalytical.Rd
 aabc5c9095c97b70f757c5eb69204128 *man/newMCResultBCa.Rd
 67a82ea9dff598a32da49daef6005ab3 *man/newMCResultJackknife.Rd
 a4e9defd5ef68e1bbad20e59f791840f *man/newMCResultResampling.Rd
-8216d520cbec4a759dabab587c1b35dd *src/PaBaAlgorithm.c
+5bdff799a0ae2c31d3708ed10cab604e *src/PaBaAlgorithm.c
 fd5c0f4e91ccf67a11fc10ddb21227ac *src/calcRegression.c
 f021954833077be45f51a38e1bdbc955 *src/calcRegression.h
 1f203c726d9969f193ea63a44bda0191 *src/init.c

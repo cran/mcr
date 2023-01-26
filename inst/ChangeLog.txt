@@ -16,3 +16,15 @@ regression; call of the robslopes package (Jakob Raymaekers)
 - implementation of analytical CI estimates for the Theil-Sen and equivariant
 PaBa estimators. 
 - improvement of MCResult.plot
+
+
+Version 1.3.1
+-------------
+
+- references for a package
+
+
+Version 1.3.2
+-------------
+
+- fixed issue in C23 mode

@@ -1,6 +1,6 @@
 Package: mcr
-Version: 1.3.1
-Date: 2022-11-07
+Version: 1.3.2
+Date: 2023-01-24
 Title: Method Comparison Regression
 Maintainer: Sergej Potapov <sergej.potapov@roche.com>
 Authors@R: c(
@@ -37,7 +37,7 @@ Collate: "mcrMisc.r" "mcLinReg.r" "mcDeming.r" "mcWDeming.r"
 RoxygenNote: 7.1.2
 LazyData: true
 NeedsCompilation: yes
-Packaged: 2022-11-08 07:30:07 UTC; potapovs
+Packaged: 2023-01-25 16:35:59 UTC; potapovs
 Author: Sergej Potapov [aut, cre],
   Fabian Model [aut],
   Andre Schuetzenmeister [aut] (<https://orcid.org/0000-0002-2964-5502>),
@@ -46,4 +46,4 @@ Author: Sergej Potapov [aut, cre],
   Jakob Raymaekers [aut] (<https://orcid.org/0000-0002-2093-3137>),
   Roche [cph, fnd]
 Repository: CRAN
-Date/Publication: 2022-11-09 07:20:07 UTC
+Date/Publication: 2023-01-26 22:00:19 UTC

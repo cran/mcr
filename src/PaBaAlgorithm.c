@@ -26,7 +26,8 @@
 #include <math.h>
 #include <assert.h>
 #include <stdlib.h>
-typedef enum {false, true} bool;        /* false=0, true=1 */
+#include <stdbool.h>
+/*typedef enum {false, true} bool;        /* false=0, true=1 */
 const double INF = 1020304.050607;      /* evaluated on R-side as Inf */
 const double EPS = 1.e-12;
 const double PI2 = PI/2;  
