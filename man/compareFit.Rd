@@ -9,6 +9,9 @@ compareFit(...)
 \arguments{
 \item{...}{list of fitted models, i.e. objects of "MCResult" sub-classes.}
 }
+\value{
+No return value, instead a plot is generated
+}
 \description{
 Graphical comparison of regression parameters (intercept and slope) and their associated
 100(1-alpha)\% confidence intervals for multiple fitted models of 'MCResult' sub-classes.

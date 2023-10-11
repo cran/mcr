@@ -9,6 +9,9 @@ MCResultAnalytical.printSummary(.Object)
 \arguments{
 \item{.Object}{object of class 'MCResultAnalytical'}
 }
+\value{
+No return value
+}
 \description{
 Function prints a summary of the regression-analysis for objects of class 'MCResultAnalytical'.
 }

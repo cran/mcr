@@ -27,12 +27,17 @@
 #' 100(1-alpha)\% confidence intervals for multiple fitted models of 'MCResult' sub-classes.
 #'
 #' @param ... list of fitted models, i.e. objects of "MCResult" sub-classes.
+#' 
+#' @return No return value, instead a plot is generated
+#' 
 #' @examples
 #'      library("mcr")
 #'      data("creatinine", package="mcr")
 #'      fit.lr <- mcreg(as.matrix(creatinine), method.reg="LinReg", na.rm=TRUE)
 #'      fit.wlr <- mcreg(as.matrix(creatinine), method.reg="WLinReg", na.rm=TRUE)
 #'      compareFit( fit.lr, fit.wlr )
+
+
 compareFit <- function( ... )
 {
     models <- list(...)
@@ -74,7 +79,8 @@ compareFit <- function( ... )
     YLIM <- c(0.6,nm+0.3) # limits for grafic
     
     old.par <- par(c("mfrow", "oma", "mar"))
-
+	on.exit(par(old.par))
+	
     par(mfrow=c(1,3),oma=c(2,2,2,2))
 
     par(mar=c(4, 0, 3, -0.1) + 0.1)
@@ -106,7 +112,6 @@ compareFit <- function( ... )
     for (s in 1:nm) arrows(slopes[s, "LCI"],s,slopes[s, "UCI"],s,angle=90,code=3,length=0.06)    # code=2 - zweiseitig
         abline(v=1, col="red", lty=2)
         
-    par(old.par)
 } #end of function
 
 

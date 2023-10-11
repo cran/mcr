@@ -166,6 +166,7 @@ newMCResultBCa <- function( wdata, para, xmean, sample.names=NULL, method.names=
 #' @param sigmaB0 SD for intercepts
 #' @param sigmaB1 SD for slopes
 #' @param weight 1 for each data point
+#' @return No return value
 
 MCResultBCa.initialize <- function( .Object, data=data.frame(X=NA,Y=NA), para=matrix(NA,ncol=4,nrow=2), xmean=0,
                                     mnames=c("unknown","unknown"), regmeth="unknown", cimeth="unknown", bootcimeth="unknown", alpha=0.05, glob.coef=c(0,0),
@@ -205,6 +206,7 @@ MCResultBCa.initialize <- function( .Object, data=data.frame(X=NA,Y=NA), para=ma
 #' @param .Object Object of class "MCResultBCa"
 #' @param breaks used in function 'hist' (see ?hist)
 #' @param ... further graphical parameters
+#' @return No return value
 
 MCResultBCa.plotBootstrapCoefficients<-function(.Object, breaks=20, ...)
 {
@@ -236,6 +238,7 @@ MCResultBCa.plotBootstrapCoefficients<-function(.Object, breaks=20, ...)
 #' @param .Object Object of class "MCResultBCa".
 #' @param breaks Number of breaks in histogram.
 #' @param ... further graphical parameters
+#' @return No return value
 
 MCResultBCa.plotBootstrapT<-function(.Object,breaks=20,...)
 {
@@ -245,6 +248,9 @@ MCResultBCa.plotBootstrapT<-function(.Object,breaks=20,...)
     } 
     else 
     {
+		oldpar <- par(no.readonly = TRUE)
+		on.exit(par(oldpar))
+		
         DF <- length(.Object@data[,"x"])-2
         tstarB0 <- (.Object@B0-.Object@glob.coef[1])/.Object@sigmaB0
         tstarB1 <- (.Object@B1-.Object@glob.coef[2])/.Object@sigmaB1
@@ -308,6 +314,7 @@ MCResultBCa.bootstrapSummary<-function(.Object)
 #' @param x.levels numeric vector specifying values of the reference method for which prediction should be made
 #' @param alpha significance level for confidence intervals
 #' @param bootcimeth character string specifying the method to be used for bootstrap confidence intervals
+#' @return matrix with predicted values with confidence intervals for given values of the reference-method.
 
 MCResultBCa.calcResponse<-function(.Object, x.levels,alpha=0.05, bootcimeth=.Object@bootcimeth)
 {
@@ -410,6 +417,7 @@ MCResultBCa.calcResponse<-function(.Object, x.levels,alpha=0.05, bootcimeth=.Obj
 #' Functions prints a summary of the regression-analysis for objects of class 'MCResultBCa'.
 #' 
 #' @param .Object object of class 'MCResultBCa'
+#' @return No return value
 
 MCResultBCa.printSummary<-function(.Object)
 {

@@ -38,6 +38,9 @@ MCResultAnalytical.initialize(
 
 \item{weight}{1 for each data point}
 }
+\value{
+No return value
+}
 \description{
 Initialize Method for 'MCResultAnalytical' Objects.
 }

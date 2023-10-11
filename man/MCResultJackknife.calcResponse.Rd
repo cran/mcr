@@ -13,6 +13,9 @@ MCResultJackknife.calcResponse(.Object, x.levels, alpha = 0.05)
 
 \item{alpha}{significance level for confidence intervals}
 }
+\value{
+matrix with predicted values with confidence intervals for given values of the reference-method.
+}
 \description{
 Calculate predicted values for given values of the reference-method.
 }

@@ -53,7 +53,8 @@ void get_Wmean(const double* x, const double* w, const int* nX, double* mean, do
 {
 	// calc mean of a vector
 	*mean = 0, *sumW = 0;
-	for(int i = 0; i < *nX; i++){
+	int i;
+	for(i = 0; i < *nX; i++){
 		*mean += w[i] * x[i];
 		*sumW += w[i];
 	}
@@ -65,7 +66,8 @@ void get_mean(const double* x, const int* nX, double* mean)
 {
 	// calc mean of a vector
 	*mean = 0;
-	for(int i = 0; i < *nX; i++){
+	int i;
+	for(i = 0; i < *nX; i++){
 		*mean += x[i];
 	}
 	*mean =  *mean / *nX;

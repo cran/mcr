@@ -113,6 +113,7 @@ newMCResultJackknife <- function(   wdata, para, sample.names=NULL, method.names
 #' @param B0jack jackknife intercepts
 #' @param B1jack jackknife slopes
 #' @param weight 1 for each data point
+#' @return No return value
 
 MCResultJackknife.initialize <- function(   .Object, data=data.frame(X=NA, Y=NA), para=matrix(NA, ncol=4, nrow=2),
                                             mnames=c("unknown","unknown"),regmeth="unknown",cimeth="jackknife",alpha=0.05,
@@ -141,6 +142,7 @@ MCResultJackknife.initialize <- function(   .Object, data=data.frame(X=NA, Y=NA)
 #' @param .Object object of class 'MCResultJackknife'
 #' @param x.levels numeric vector specifying values of the reference method for which prediction should be made
 #' @param alpha significance level for confidence intervals
+#' @return matrix with predicted values with confidence intervals for given values of the reference-method.
 
 MCResultJackknife.calcResponse <- function(.Object, x.levels, alpha=0.05){
     
@@ -248,6 +250,7 @@ MCResultJackknife.getRJIF<-function(.Object)
 #' are highlighted as red points.
 #'
 #' @param .Object object of class "MCResultJackknife" or "MCResultResampling"
+#' @return No return value
 #' @references Efron, B. (1990)
 #'             Jackknife-After-Bootstrap Standard Errors and Influence Functions.
 #'             Technical Report , \bold{N 134}.
@@ -265,6 +268,9 @@ MCResultJackknife.getRJIF<-function(.Object)
 #'     plotwithRJIF(model)
 MCResultJackknife.plotwithRJIF<-function(.Object)
 {
+	oldpar <- par(no.readonly = TRUE)
+	on.exit(par(oldpar))
+	
     RJIF <- getRJIF(.Object)
     UB0star <- RJIF$intercept
     UB1star <- RJIF$slope
@@ -314,6 +320,7 @@ MCResultJackknife.getJackknifeStatistics <- function(.Object)
 #' Functions prints a summary of the regression-analysis for objects of class 'MCResultJackknife'.
 #' 
 #' @param .Object object of class 'MCResultJackknife'
+#' @return No return value
 
 MCResultJackknife.printSummary<-function(.Object)
 {

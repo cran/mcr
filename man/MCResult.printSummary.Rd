@@ -11,6 +11,9 @@ MCResult.printSummary(.Object)
 \arguments{
 \item{.Object}{object of type "MCResult".}
 }
+\value{
+No return value
+}
 \description{
 Print Summary of a Regression Analysis
 }

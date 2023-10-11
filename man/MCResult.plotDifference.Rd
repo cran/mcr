@@ -87,6 +87,9 @@ Possible choices are:
 
 \item{...}{further graphical parameters}
 }
+\value{
+No return value, instead a plot is generated
+}
 \description{
 Draw different Bland-Altman plot modifications (see parameter \code{plot.type}).
 }

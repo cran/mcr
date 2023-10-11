@@ -50,6 +50,9 @@ If res.type="optimized" the proper type of residuals for each regression will be
 
 \item{...}{further graphical parameters}
 }
+\value{
+No return value, instead a plot is generated
+}
 \description{
 Plot Residuals of an MCResult Object
 }

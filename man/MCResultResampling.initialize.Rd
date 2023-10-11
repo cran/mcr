@@ -74,6 +74,9 @@ MCResultResampling.initialize(
 
 \item{weight}{1 for each data point}
 }
+\value{
+No return value
+}
 \description{
 Method initializes newly created objects of class 'MCResultAnalytical'.
 }

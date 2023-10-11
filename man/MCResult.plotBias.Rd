@@ -102,6 +102,9 @@ MCResult.plotBias(
 
 \item{...}{further graphical parameters}
 }
+\value{
+No return value, instead a plot is generated
+}
 \description{
 This function plots the estimated systematical bias 
 \eqn{( Intercept + Slope * Refrencemethod ) - Referencemethod}

@@ -13,6 +13,9 @@ MCResultResampling.plotBootstrapCoefficients(.Object, breaks = 20, ...)
 
 \item{...}{further graphical parameters}
 }
+\value{
+No return value
+}
 \description{
 Plot distriblution of bootstrap coefficients (slope and intercept).
 }

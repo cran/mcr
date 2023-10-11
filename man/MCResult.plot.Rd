@@ -124,6 +124,9 @@ MCResult.plot(
 
 \item{...}{further graphical parameters}
 }
+\value{
+No return value, instead a plot is generated
+}
 \description{
 Plot method X (reference) vs. method Y (test) with (optional) line of identity,
 regression line and confidence bounds for response.

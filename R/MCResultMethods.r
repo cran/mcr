@@ -326,6 +326,7 @@ MCResult.calcCUSUM <- function(.Object)
 #'              \emph{Lancet}, \bold{i:} 307--310. 
 #' @seealso \code{\link{plot.mcr}}, \code{\link{plotResiduals}}, \code{\link{plotDifference}}, \code{\link{plotBias}}, \code{\link{compareFit}}
 #' @aliases plotDifference
+#' @return No return value, instead a plot is generated
 #' @examples
 #'     #library("mcr")
 #'     data(creatinine,package="mcr")
@@ -458,6 +459,9 @@ MCResult.plotDifference <- function(.Object,
         YLim <- c(y.low,y.up)   ## ylim replaced by YLim
     }
     
+	oldpar <- par(no.readonly = TRUE)
+	on.exit(par(oldpar))
+	
     par(mar=c(5, 5, 4, 5) + 0.1)
     xlim <- c(range(X, na.rm=TRUE)[1],range(X, na.rm=TRUE)[2]+1/10*(range(X, na.rm=TRUE)[2]-range(X, na.rm=TRUE)[1]))
     
@@ -669,6 +673,7 @@ MCResult.calcBias <- function(.Object, x.levels, type = c("absolute", "proportio
 #' @seealso \code{\link{plotBias}}, \code{\link{plotResiduals}}, \code{\link{plotDifference}}, \code{\link{compareFit}},\code{\link{includeLegend}}
 #' @aliases plot.mcr
 #' @aliases plot
+#' @return No return value, instead a plot is generated
 #' @examples
 #'  library(mcr)
 #'  data(creatinine,package="mcr")
@@ -1127,6 +1132,7 @@ MCResult.plot <- function(x,
 #' @param ... further graphical parameters
 #' @seealso \code{\link{calcBias}}, \code{\link{plot.mcr}}, \code{\link{plotResiduals}}, \code{\link{plotDifference}}, \code{\link{compareFit}}
 #' @aliases plotBias
+#' @return No return value, instead a plot is generated
 #' @examples
 #' #library("mcr")
 #' data(creatinine,package="mcr")
@@ -1606,6 +1612,7 @@ MCResult.plotBias<-function(x,
 #' @param .Object object of type "MCResult".
 #' @seealso \code{\link{getCoefficients}}, \code{\link{getRegmethod}}
 #' @aliases printSummary summary
+#' @return No return value
 #' 
 MCResult.printSummary <- function(.Object)
 {
@@ -1634,6 +1641,7 @@ MCResult.printSummary <- function(.Object)
 #' @param ... further graphical parameters
 #' @seealso \code{\link{getResiduals}}, \code{\link{plot.mcr}}, \code{\link{plotDifference}}, \code{\link{plotBias}}, \code{\link{compareFit}}
 #' @aliases plotResiduals
+#' @return No return value, instead a plot is generated
 #' @examples
 #'     data(creatinine,package="mcr")
 #'     x <- creatinine$serum.crea

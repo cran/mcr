@@ -1,6 +1,6 @@
 # Test cases for mcrInterface.R
 # 
-# Author(s): Fabian Model & André Schützenmeister
+# Author(s): Fabian Model & Andre Schuetzenmeister
 ###############################################################################
 
 

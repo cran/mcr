@@ -9,6 +9,9 @@ MCResultBCa.printSummary(.Object)
 \arguments{
 \item{.Object}{object of class 'MCResultBCa'}
 }
+\value{
+No return value
+}
 \description{
 Functions prints a summary of the regression-analysis for objects of class 'MCResultBCa'.
 }

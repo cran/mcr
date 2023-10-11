@@ -10,6 +10,9 @@ MCResultJackknife.plotwithRJIF(.Object)
 \arguments{
 \item{.Object}{object of class "MCResultJackknife" or "MCResultResampling"}
 }
+\value{
+No return value
+}
 \description{
 The function draws reference method vs. test method as scatter plot. 
 Observations with high influence (relative jackknife influence function is greater than 2)

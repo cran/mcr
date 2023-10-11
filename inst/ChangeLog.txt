@@ -28,3 +28,10 @@ Version 1.3.2
 -------------
 
 - fixed issue in C23 mode
+
+Version 1.3.3
+-------------
+
+- fixed issue with fortran function ktau.f
+- acknowledged contributor Seshan (ktau function) in copyright
+

@@ -4,7 +4,7 @@
 #       Diagnostics, Penzberg, Department Biostatistics & Online Data Processing).
 #       This C++ source-code is now reimplemented in C and adapted to gain more flexibility. 
 #       
-# Author: schueta6
+# Author: Andre Schuetzenmeister
 ###############################################################################
 
 

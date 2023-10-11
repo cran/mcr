@@ -2,7 +2,7 @@
 #       intranet module testcase collection. Results obtained from the approximative Passing-Bablok implementation
 #       (PaBaLarge) are compared to results of the exact implementation (PaBa).
 # 
-# Author: schueta6
+# Author: Andre Schuetzenmeister
 ###############################################################################
 
 
@@ -13,7 +13,7 @@ PaBaLargePrecision <- 1e-04
 
 cat("\n\n********************************************\nmcPaBaLarge.R method comparison test cases\n********************************************")
 
-load(".\\TestCaseCollection\\testcases.RData", .GlobalEnv)
+load(".\\TestCaseCollection\\testcases.RData")
 
 TCnames <- names(testcases)
 

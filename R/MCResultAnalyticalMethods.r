@@ -101,6 +101,7 @@ newMCResultAnalytical <- function(wdata,para,xmean,sample.names=NULL,method.name
 #' @param error.ratio for deming regression 
 #' @param alpha value specifying the 100(1-alpha)\% confidence-level
 #' @param weight 1 for each data point
+#' @return No return value
 
 MCResultAnalytical.initialize <- function(.Object,data=data.frame(X=NA,Y=NA),xmean=0,para=matrix(NA,ncol=4,nrow=2),
                                           mnames=c("unknown","unknown"),regmeth="unknown",cimeth="analytical",
@@ -126,6 +127,7 @@ MCResultAnalytical.initialize <- function(.Object,data=data.frame(X=NA,Y=NA),xme
 #' @param .Object object of class 'MCResultAnalytical'
 #' @param x.levels numeric vector specifying values of the reference method for which prediction should be made
 #' @param alpha significance level for confidence intervals
+#' @return matrix with predicted values with confidence intervals for given values of the reference-method.
 
 MCResultAnalytical.calcResponse <- function(.Object,x.levels,alpha=0.05)
 {    
@@ -175,6 +177,7 @@ MCResultAnalytical.calcResponse <- function(.Object,x.levels,alpha=0.05)
 #' Function prints a summary of the regression-analysis for objects of class 'MCResultAnalytical'.
 #' 
 #' @param .Object object of class 'MCResultAnalytical'
+#' @return No return value
 
 MCResultAnalytical.printSummary<-function(.Object)
 {

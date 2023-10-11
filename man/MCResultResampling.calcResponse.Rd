@@ -20,6 +20,9 @@ MCResultResampling.calcResponse(
 
 \item{bootcimeth}{bootstrap confidence interval method to be used}
 }
+\value{
+matrix with predicted values with confidence intervals for given values of the reference-method.
+}
 \description{
 Calculate predicted values for given values of the reference-method.
 }

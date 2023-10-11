@@ -13,6 +13,9 @@ MCResultBCa.plotBootstrapT(.Object, breaks = 20, ...)
 
 \item{...}{further graphical parameters}
 }
+\value{
+No return value
+}
 \description{
 Plot distriblution of bootstrap pivot T for slope and intercept and compare
 them with t(n-2) distribution.

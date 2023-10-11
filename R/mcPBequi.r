@@ -70,7 +70,7 @@ mc.PBequi <- function( X, Y, alpha = 0.05, slope.measure = c("radian", "tangent"
     z <- qt(1-alpha/2,n-2)
     ysign <- 1
     if(method.reg=="PBequi"){
-        ysign <- ifelse(methodlarge,sign(zswaps(X,Y,0,t0=0,method.reg="TS")),sign(suppressWarnings(R_ktau(X,Y))))
+        ysign <- sign(R_ktau(X,Y))
     }
     Y <-Y*ysign
 
@@ -152,18 +152,28 @@ mc.PBequi <- function( X, Y, alpha = 0.05, slope.measure = c("radian", "tangent"
             for (i in 1:(length(Z)-1)){
                    if(calcDiff(Z[i],Z[i+1])==0) Z[i] <- Z[i+1] <- (Z[i]+Z[i+1])/2
                 }
+            n2 <- n*(n-1)
             zneg <- Z[Z<0]
             zpos <- Z[Z>0]
             qneg <- Q[Z<0]
             qpos <- Q[Z>0]
             nneg <- length(zneg) 
+            if(nneg >1){
+                nneg2 <- nneg*(nneg-1)
+                tauneg <- R_ktau(zneg,qneg)
+                tauneg <- tauneg*nneg2
+            }else{
+                tauneg <- 0
+            }
             npos <- length(zpos) 
-            npos2 <-npos*(npos-1)
-            nneg2 <-nneg*(nneg-1)
-            n2 <- n*(n-1)
-            tauneg <-suppressWarnings(R_ktau(zneg,qneg))
-            taupos <-suppressWarnings(R_ktau(zpos,qpos))
-            covtx <- 2*(taupos*npos2-tauneg*nneg2)/n2/sqrt(n*vartau)
+            if(npos >1){
+                npos2 <- npos*(npos-1)
+                taupos <- R_ktau(zpos,qpos)
+                taupos <- taupos*npos2
+            }else{
+                taupos <- 0
+            }
+            covtx <- 2*(taupos-tauneg)/n2/sqrt(n*vartau)
             # derivative of intercept wrt slope
             Zl <- Y-(slope-seSlope*z0)*X
             Zu <- Y-(slope+seSlope*z0)*X
@@ -277,19 +287,28 @@ mc.PBequi <- function( X, Y, alpha = 0.05, slope.measure = c("radian", "tangent"
             for (i in 1:(length(Z)-1)){
                 if(calcDiff(Z[i],Z[i+1])==0)  Z[i] <- Z[i+1] <- (Z[i]+Z[i+1])/2
                  }
+            n2 <- n*(n-1)
             zneg <- Z[Z<0]
             zpos <- Z[Z>0]
             qneg <- Q[Z<0]
             qpos <- Q[Z>0]
             nneg <- length(zneg) 
+            if(nneg >1){
+                nneg2 <- nneg*(nneg-1)
+                tauneg <- R_ktau(zneg,qneg)
+                tauneg <- tauneg*nneg2
+            }else{
+                tauneg <- 0
+            }
             npos <- length(zpos) 
-            npos2 <-npos*(npos-1)
-            nneg2 <-nneg*(nneg-1)
-            n2 <- n*(n-1)
-            tauneg <- zswaps(qneg,zneg,0,t0=0,method.reg="TS") #TS to prevent transformation of qneg
-            taupos <- zswaps(qpos,zpos,0,t0=0,method.reg="TS")
-            tauneg <-suppressWarnings(R_ktau(zneg,qneg))
-            covtx <- 2*(taupos*npos2-tauneg*nneg2)/n2/sqrt(n*vartau)
+            if(npos >1){
+                npos2 <- npos*(npos-1)
+                taupos <- R_ktau(zpos,qpos)
+                taupos <- taupos*npos2
+            }else{
+                taupos <- 0
+            }
+            covtx <- 2*(taupos-tauneg)/n2/sqrt(n*vartau)
             # derivative of intercept wrt slope
             Zl <- Y-(slope-seSlope*z0)*X
             Zu <- Y-(slope+seSlope*z0)*X
@@ -349,28 +368,6 @@ mc.PBequi <- function( X, Y, alpha = 0.05, slope.measure = c("radian", "tangent"
     }
     return(ret)
 }
-
-zswaps <- function(X,Y,m,t0=0.0,method.reg=c("PBequi","TS")){
-    if (method.reg=="PBequi"){
-        W <- Y+m*X 
-    } else{ #TS
-        W <- X
-    }
-    Z <- Y-m*X
-    ok <- complete.cases(W,Z)
-    if(sum(ok)>0){
-        x1 <- W[ok]
-        y1 <- Z[ok]
-        ii <- order(x1,y1)
-        fswaps <- .Fortran("ktau",n=as.integer(length(x1)),x=as.double(x1[ii]),y=as.double(y1[ii]),tau=double(1))
-        swaps <- fswaps$tau-t0
-    }else{
-        swaps <- NA 
-    }
-    return(swaps)
-}
-
-
 
 
 tauvar2 <- function(X,Y,m,method.reg=c("PBequi","TS")){ 
@@ -442,15 +439,4 @@ countDups <- function(x) {
 }
 
 
-R_ktau <- function (x, y) 
-{
-    ok <- complete.cases(x, y)
-    x1 <- x[ok]
-    y1 <- y[ok]
-    n <- length(x1)
-    ii <- order(x1, y1)
-    zzz <- .Fortran("ktau", as.integer(n), as.double(x1[ii]), 
-        as.double(y1[ii]), tau = double(1))
-    zzz$tau
-}
 

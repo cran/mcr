@@ -9,6 +9,9 @@ MCResultJackknife.printSummary(.Object)
 \arguments{
 \item{.Object}{object of class 'MCResultJackknife'}
 }
+\value{
+No return value
+}
 \description{
 Functions prints a summary of the regression-analysis for objects of class 'MCResultJackknife'.
 }

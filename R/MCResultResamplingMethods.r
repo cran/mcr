@@ -155,6 +155,7 @@ newMCResultResampling <- function(wdata,para,xmean,sample.names=NULL,method.name
 #' @param sigmaB0 SD for 'B0'
 #' @param sigmaB1 SD for 'B1'
 #' @param weight 1 for each data point
+#' @return No return value
 
 MCResultResampling.initialize <- function(.Object,data=data.frame(X=NA,Y=NA),para=matrix(NA,ncol=4,nrow=2),xmean=0,mnames=c("unknown","unknown"),
                                           regmeth="unknown",cimeth="unknown",bootcimeth="unknown",alpha=0.05,glob.coef=c(0,0),
@@ -193,6 +194,7 @@ MCResultResampling.initialize <- function(.Object,data=data.frame(X=NA,Y=NA),par
 #' @param .Object Object of class "MCResultResampling"
 #' @param breaks see function 'hist' (?hist) for details
 #' @param ... further graphical parameters
+#' @return No return value
 
 MCResultResampling.plotBootstrapCoefficients<-function(.Object,breaks=20,...){
     layout(matrix(c(1,1,2,2,1,1,3,3),nrow=2,ncol=4, byrow=TRUE))
@@ -223,11 +225,16 @@ MCResultResampling.plotBootstrapCoefficients<-function(.Object,breaks=20,...){
 #' @param .Object Object of class "MCResultResampling".
 #' @param breaks Number of breaks in histogram.
 #' @param ... further graphical parameters
+#' @return No return value
 
 MCResultResampling.plotBootstrapT<-function(.Object,breaks=20,...){
     if (length(.Object@sigmaB0)<=1){return(
                 "T*-density is not available (there is no analytical SE-estimation for this regression type)")
     } else {
+		
+		oldpar <- par(no.readonly = TRUE)
+		on.exit(par(oldpar))
+		
         DF<- length(.Object@data[,"x"])-2
         tstarB0<-(.Object@B0-.Object@glob.coef[1])/.Object@sigmaB0
         tstarB1<-(.Object@B1-.Object@glob.coef[2])/.Object@sigmaB1
@@ -291,6 +298,7 @@ MCResultResampling.bootstrapSummary<-function(.Object){
 #' @param x.levels numeric vector specifying values of the reference method for which prediction should be made
 #' @param alpha significance level for confidence intervals
 #' @param bootcimeth bootstrap confidence interval method to be used
+#' @return matrix with predicted values with confidence intervals for given values of the reference-method.
 
 MCResultResampling.calcResponse<-function(.Object, x.levels, alpha=0.05, bootcimeth=.Object@bootcimeth){
     

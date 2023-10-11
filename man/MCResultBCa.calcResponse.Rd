@@ -20,6 +20,9 @@ MCResultBCa.calcResponse(
 
 \item{bootcimeth}{character string specifying the method to be used for bootstrap confidence intervals}
 }
+\value{
+matrix with predicted values with confidence intervals for given values of the reference-method.
+}
 \description{
 Calculate predicted values for given values of the reference-method.
 }

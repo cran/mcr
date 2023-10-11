@@ -387,7 +387,7 @@ test.mc.PBequi.call2 <- function()
     crea <- creatinine[complete.cases(creatinine),]
 
 # Compare to deming package
-    library(deming)
+#    library(deming)
 
 #    Compare equivariant PaBa regression
 

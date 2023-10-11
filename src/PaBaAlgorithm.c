@@ -27,7 +27,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
-/*typedef enum {false, true} bool;        /* false=0, true=1 */
+/*typedef enum {false, true} bool;         false=0, true=1 */
 const double INF = 1020304.050607;      /* evaluated on R-side as Inf */
 const double EPS = 1.e-12;
 const double PI2 = PI/2;  
@@ -116,7 +116,8 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
   int Index1, Index2, LCLindex, LCLindex1, LCLindex2, UCLindex, UCLindex1, UCLindex2;     /* needed if Indices are even numbers */
   NPos = NPos2 = NNeg = NNeg2 = NRegular = NAllItems = Index = Offset = nValIndex2 = 0;
   pBins = (int *) calloc((*pNBins+1), sizeof(int));                 /* allocate memory for the binning-array */
-  for(int i=0; i <=*pNBins; i++)
+  int i;
+  for(i=0; i <=*pNBins; i++)
     pBins[i] = 0;
   FillBins( pBins, pPosCor, pX, pY, pNData, &NPos, &NPos2,          /* call workhorse-function */
             &NNeg, &NNeg2, &NRegular, &NAllItems, pNBins);
@@ -221,11 +222,11 @@ void FillBins(  int * pnSlots, int * posCor, double * pXVals, double * pYVals,
                 int * nRegular, int * nAllItems, int * nSlots)
 {
   double dx,dy,phi;
-  int Index;
+  int Index, j, k;
   *nPos = *nPos2 = *nNeg = *nNeg2 = *nAllItems = *nRegular = 0;
-	for(int j = 0; j < *nData; j++)
+	for(j = 0; j < *nData; j++)
 	{
-		for(int k = j+1; k < *nData; k++)
+		for(k = j+1; k < *nData; k++)
 		{
 			dx = calcDiff(pXVals[k], pXVals[j]);
 			dy = calcDiff(pYVals[k], pYVals[j]);
@@ -288,8 +289,10 @@ void FillBins(  int * pnSlots, int * posCor, double * pXVals, double * pYVals,
 int IndexOf(int nItems, int * pnSlots, int nSlots)
 {
 	int nInd = 0;
-  int Index = 0;
-	for(int j = 0; j < nSlots + 1; j++)          // replaced < by <= nSlots, since there are N+1 slots actually
+	int Index = 0;
+	int j;
+	
+	for(j = 0; j < nSlots + 1; j++)          // replaced < by <= nSlots, since there are N+1 slots actually
 	{
 		nInd += pnSlots[j];
 		if(nInd >=  nItems)
