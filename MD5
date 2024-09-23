@@ -1,4 +1,4 @@
-dc17b1a196edbf0fcf5361897f1e8745 *DESCRIPTION
+e29fbb6fb1c7fcd93a838722200ede42 *DESCRIPTION
 1f3661119a760d370f6b9b7ffc32353c *NAMESPACE
 f8925ca48ffb59e27e0f8329c60db6a1 *R/MCResult.r
 8eab489c07dfd35c95e47b856f816f74 *R/MCResultAnalytical.r
@@ -122,8 +122,8 @@ fdf8e49cfab18f158a4f76550697ddc8 *man/newMCResultAnalytical.Rd
 aabc5c9095c97b70f757c5eb69204128 *man/newMCResultBCa.Rd
 67a82ea9dff598a32da49daef6005ab3 *man/newMCResultJackknife.Rd
 a4e9defd5ef68e1bbad20e59f791840f *man/newMCResultResampling.Rd
-1da1b5b2a4a029b08cc2e92e20c1b156 *src/PaBaAlgorithm.c
-fd5c0f4e91ccf67a11fc10ddb21227ac *src/calcRegression.c
+22c5b9a26c612663d5802789dd02e452 *src/PaBaAlgorithm.c
+a8f446adddd44cbc8cc4c1ab41738339 *src/calcRegression.c
 f021954833077be45f51a38e1bdbc955 *src/calcRegression.h
 1f203c726d9969f193ea63a44bda0191 *src/init.c
 a8c3e8bb1b5f38e6e1262e7d2e07d773 *src/ktau.f

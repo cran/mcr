@@ -30,8 +30,8 @@
 /*typedef enum {false, true} bool;         false=0, true=1 */
 const double INF = 1020304.050607;      /* evaluated on R-side as Inf */
 const double EPS = 1.e-12;
-const double PI2 = PI/2;  
-const double PI4 = PI/4;
+//const double PI2 = PI/2;  
+//const double PI4 = PI/4;
 /* function prototypes to avoid implict declaration of functions */
 void FillBins(  int * pnSlots, int * posCor, double * pXVals, double * pYVals,
                 int * nData, int * nPos, int * nPos2, int * nNeg, int * nNeg2, 
@@ -138,7 +138,7 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
   else                                                              /* nValIndex2 is an odd number */ 
   {
     Index = IndexOf( half, pBins, *pNBins);                         
-    *pSlope = Tan( ((double)(Index) / (*pNBins)) * PI - PI2);
+    *pSlope = Tan( ((double)(Index) / (*pNBins)) * M_PI - M_PI_2);
   }
   /* calculate confidence interval for the slope, the CI for the intercept will be calculated on R-side */
   /* Lower CI-Bound */
@@ -163,7 +163,7 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
     {
 	    LCLindex = IndexOf(nItems, pBins, *pNBins);
 		  if(LCLindex >= 0)
-        *pSlopeLower = Tan(((double)LCLindex/(*pNBins))*PI - PI2);
+        *pSlopeLower = Tan(((double)LCLindex/(*pNBins))*M_PI - M_PI_2);
       else
 		    LCLundef = true; 
     }
@@ -188,7 +188,7 @@ void PaBaLargeData( double * pX, double * pY, int * pNData, int * pPosCor, int *
     {
 	    UCLindex = IndexOf(nItems, pBins, *pNBins);
 	    if(UCLindex >= 0)
-        *pSlopeUpper = Tan((double)UCLindex/(*pNBins) * PI - PI2);
+        *pSlopeUpper = Tan((double)UCLindex/(*pNBins) * M_PI - M_PI_2);
 		  else
         UCLundef = true;
     }
@@ -233,21 +233,21 @@ void FillBins(  int * pnSlots, int * posCor, double * pXVals, double * pYVals,
 			if(dx != .0)                                        // avoiding division by zero              
 			{
 				phi = atan(dy/dx);
-				Index = (int) (.5 + (*nSlots)*(phi+PI2)/PI);           // indices are computed for all angles within 1st and 2nd quadrant of a cartesian coordinate system
+				Index = (int) (.5 + (*nSlots)*(phi+M_PI_2)/M_PI);           // indices are computed for all angles within 1st and 2nd quadrant of a cartesian coordinate system
 				pnSlots[Index]++;                                 // ... casting cuts decimal digits
 				(*nAllItems)++;
-        if( phi >= PI4 )
+        if( phi >= M_PI_4 )
         {
           (*nPos)++;
-          if( phi > PI4 )
+          if( phi > M_PI_4 )
           {
             (*nPos2)++;
           }
         }
-        else if( phi <= -PI4 )
+        else if( phi <= -M_PI_4 )
         {
           (*nNeg)++;
-          if( phi < -PI4 )
+          if( phi < -M_PI_4 )
           {
             (*nNeg2)++;
           }
@@ -312,7 +312,7 @@ int IndexOf(int nItems, int * pnSlots, int nSlots)
 */
 double Tan(double x)
 {
-	if(calcDiff(fabs(x), PI2) == 0.)
+	if(calcDiff(fabs(x), M_PI_2) == 0.)
 	{
 		if(x > 0)
 		{
@@ -337,8 +337,8 @@ double getMedianSlope(int index1, int index2, int NBins, int tangent)
 {
   double Slope;
 
-  double Slope1 = ((double)index1 / (NBins)) * PI - PI2;
-  double Slope2 = ((double)index2 / (NBins)) * PI - PI2;
+  double Slope1 = ((double)index1 / (NBins)) * M_PI - M_PI_2;
+  double Slope2 = ((double)index2 / (NBins)) * M_PI - M_PI_2;
   
   if(tangent == 1)
   {
